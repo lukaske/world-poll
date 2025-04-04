@@ -6,12 +6,16 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch --env-file=./.env --clear-screen=false ./index.ts | pino-pretty",
-    "a": "tsx --help"
+    "a": "tsx --help",
+    "test": "node --env-file=./.env --watch test.js | pino-pretty"
   },
   "dependencies": {
+    "@langchain/core": "^0.3.43",
+    "@langchain/openai": "^0.5.3",
     "@worldcoin/minikit-js": "1.1.1",
     "cors": "^2.8.5",
     "express": "^4.21.0",
+    "langchain": "^0.3.20",
     "node-fetch": "^3.3.2",
     "pino-pretty": "^11.0.0",
     "tsx": "^4.7.2"
