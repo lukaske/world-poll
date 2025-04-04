@@ -43,7 +43,7 @@ export const VerifyBlock = () => {
 
     // Verify the proof in the backend
     const verifyResponse = await fetch(
-      `${process.env.NEXTAUTH_URL}/api/verify`,
+      import.meta.env.VITE_DEPLOYMENT_URL + "/api/verify",
       {
         method: "POST",
         headers: {

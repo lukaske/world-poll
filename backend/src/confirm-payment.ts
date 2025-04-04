@@ -4,6 +4,7 @@ import { RequestHandler } from "express";
 
 interface IRequestPayload {
   payload: MiniAppPaymentSuccessPayload;
+  reference: string;
 }
 
 export const confirmPaymentHandler: RequestHandler = async (req, res) => {
@@ -11,7 +12,8 @@ export const confirmPaymentHandler: RequestHandler = async (req, res) => {
 
   // IMPORTANT: Here we should fetch the reference you created in /initiate-payment to ensure the transaction we are verifying is the same one we initiated
   // const reference = getReferenceFromDB();
-  const reference = req.cookies["payment-nonce"];
+  // const reference = req.cookies["payment-nonce"];
+  const reference = req.body.reference;
 
   if (!reference) {
     res.json({ success: false });

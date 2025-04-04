@@ -8,7 +8,7 @@ import {
 const sendPayment = async () => {
   try {
     const res = await fetch(
-      `${process.env.NEXTAUTH_URL}/api/initiate-payment`,
+      import.meta.env.VITE_DEPLOYMENT_URL + "/api/initiate-payment",
       {
         method: "POST",
       }
@@ -20,11 +20,11 @@ const sendPayment = async () => {
 
     const payload: PayCommandInput = {
       reference: id,
-      to: "0x0c892815f0B058E69987920A23FBb33c834289cf", // Test address
+      to: "0x4c44a6a5af7206b27d37d49e896b67a086e80042", // Test address
       tokens: [
         {
           symbol: Tokens.WLD,
-          token_amount: tokenToDecimals(0.5, Tokens.WLD).toString(),
+          token_amount: tokenToDecimals(0.1, Tokens.WLD).toString(),
         },
         {
           symbol: Tokens.USDCE,
@@ -55,10 +55,12 @@ const handlePay = async () => {
   }
 
   if (response.status == "success") {
-    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/confirm-payment`, {
+    const res = await fetch(
+      import.meta.env.VITE_DEPLOYMENT_URL + "/api/confirm-payment",
+      {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ payload: response }),
+      body: JSON.stringify({ payload: response, reference: response.reference }),
     });
     const payment = await res.json();
     if (payment.success) {
