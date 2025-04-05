@@ -21,28 +21,40 @@ class ResearchRequest(BaseModel):
     previous_poll_results: Optional[Dict[str, List[Dict]]] = None
 
 REPORT_STRUCTURE = """Use this structure to create a report on the user-provided topic:
+1. Introduction
+   - Brief overview of the topic area (2-3 sentences)
+   - Clear statement of the report's purpose and scope
+   - No research needed for this section
 
-1. Introduction (no research needed)
-   - Brief overview of the topic area
 2. Main Body Sections:
-   - Each section should focus on a sub-topic of the user-provided topic
-   - There should be at most 1 section, and all should be detailed in a few sentences, any empirical evidence should be included
-   - Make sure that each section is researched on publicly available data
-   - At least one sections should be based on empirical evidence gathered from internet
-   - If previous poll results are provided, incorporate insights from them
+   - Include exactly 2 distinct sub-topics that best represent key aspects of the user-provided topic
+   - Each section should:
+     * Have a descriptive heading that clearly identifies the sub-topic
+     * Contain 3-5 sentences of detailed analysis
+     * Include specific empirical evidence with numerical data or statistics when available
+     * Sections must be backed by research on publicly available data
+
 3. Conclusion
-    - Provide a concise summary of the report
-4. Pool
-    - Identify the subjective elements of the report and create a poll to gather user feedback
-    - Create a poll with about 3 questions for the user to choose from which should give the user additional data which can be used to improve the report
-    - The pool should be in the form of a multiple choice question
-    - Each question should have around 3-5 options
-"""
+   - Provide a concise summary (2-3 sentences) synthesizing the key findings
+   - Highlight the most important insight from each main body section
+   - No new information should be introduced here
+
+4. Poll
+   - Create 3 multiple choice questions specifically targeting subjective aspects of the topic that are:
+     * Vulnerable to online manipulation by bots or coordinated campaigns
+     * Open to opinion, personal bias, or ideological interpretation
+     * Frequently debated or contested in online spaces
+   - Requirements for each question:
+     * Keep questions concise (15-25 words maximum)
+     * Design questions to reveal potential opinion manipulation or polarization
+     * Address areas where factual information might be overshadowed by personal beliefs
+     * Provide 3-4 distinct answer options that span the spectrum of common viewpoints
+     * Format options as brief phrases rather than full sentences
+ """
 
 async def generate_research(request: ResearchRequest):
     memory = MemorySaver()
     graph = builder.compile(checkpointer=memory)
-    # Format previous poll results as a string if they exist
     poll_context = ""
     if request.previous_poll_results:
         poll_context = "\nPrevious poll results:\n"
@@ -56,7 +68,7 @@ async def generate_research(request: ResearchRequest):
             "thread_id": str(uuid.uuid4()),
             "search_api": "tavily", 
             "planner_provider": "openai",
-            "planner_model": "o3-mini",
+            "planner_model": "gpt-4o-mini",
             "writer_provider": "openai",
             "writer_model": "o3-mini",
             "max_search_depth": 1,
