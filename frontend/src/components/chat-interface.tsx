@@ -255,7 +255,7 @@ export function ChatInterface() {
 
   const handleIterate = async (pollResults)  => {
         const initialMessage: Message[] = messages.filter((msg) => msg.role == 'user')
-        const iteratedInput = initialMessage[initialMessage.length - 1].content + '\n\n Please think of further questions to deep explore this topic based on the following collected poll data: ' + JSON.stringify(pollResults)
+        const iteratedInput = initialMessage[initialMessage.length - 1].content + '\n\n Please think of further questions to deep explore this topic based on the following collected poll data: ' + pollResults
         
         const userMessage: Message = {
           id: Date.now().toString(),
@@ -338,6 +338,7 @@ export function ChatInterface() {
         ref={modalRef}
         isOpen={isModalOpen}
         onClose={closeModal}
+        callBak={handleIterate}
       />
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
@@ -367,106 +368,7 @@ export function ChatInterface() {
                     <div className="text-xs text-muted-foreground mb-2 ">
                       Questions submitted to users! <br></br>Collect feedback to continue generating
                     </div>
-                    <Button className="py-4" onClick={() => handleIterate([{
-  "_id": {
-    "$oid": "67f182aae619802903ea290f"
-  },
-  "question": "Which innovative coffee flavor should we introduce?",
-  "options": [
-    "Caramel",
-    "Hazelnut",
-    "Vanilla",
-    "Mocha"
-  ],
-  "createdAt": {
-    "$date": "2025-04-05T19:21:14.350Z"
-  },
-  "answers": [
-    2,
-    3,
-    2,
-    5
-  ],
-  "contributors": [],
-  "promptId": {
-    "$oid": "67f182aae619802903ea290e"
-  }
-},
-{
-  "_id": {
-    "$oid": "67f182aae619802903ea2910"
-  },
-  "question": "Which functional ingredient would enhance your coffee experience?",
-  "options": [
-    "Mushroom extract",
-    "Turmeric",
-    "Collagen",
-    "None"
-  ],
-  "createdAt": {
-    "$date": "2025-04-05T19:21:14.554Z"
-  },
-  "answers": [
-    6,
-    6,
-    5,
-    1
-  ],
-  "contributors": [],
-  "promptId": {
-    "$oid": "67f182aae619802903ea290e"
-  }
-},
-{
-  "_id": {
-    "$oid": "67f182aae619802903ea2911"
-  },
-  "question": "What sustainability feature is most important?",
-  "options": [
-    "Organic sourcing",
-    "Eco-friendly packaging",
-    "Fair-trade practices",
-    "Local sourcing"
-  ],
-  "createdAt": {
-    "$date": "2025-04-05T19:21:14.758Z"
-  },
-  "answers": [
-    2,
-    1,
-    4,
-    4
-  ],
-  "contributors": [],
-  "promptId": {
-    "$oid": "67f182aae619802903ea290e"
-  }
-},
-{
-  "_id": {
-    "$oid": "67f182aae619802903ea2912"
-  },
-  "question": "How do you prefer your coffee served?",
-  "options": [
-    "Hot",
-    "Iced",
-    "Ready-to-drink",
-    "Specialty brews"
-  ],
-  "createdAt": {
-    "$date": "2025-04-05T19:21:14.962Z"
-  },
-  "answers": [
-    1,
-    3,
-    4,
-    6
-  ],
-  "contributors": [],
-  "promptId": {
-    "$oid": "67f182aae619802903ea290e"
-  }
-}])} disabled={isLoading}>
+                    <Button className="py-4" onClick={openModal} disabled={isLoading}>
                         Iterate based on feedback
                       <StepForward className="h-4 w-4" />
                     </Button>
@@ -524,8 +426,12 @@ export function ChatInterface() {
 
         </div>
       </form>
-      <button onClick={closePoll}>Close poll</button>
-      <button onClick={sendNotification}>Send notification</button>
+      {
+        /*
+        <button onClick={closePoll}>Close poll</button>
+        <button onClick={sendNotification}>Send notification</button>
+        */
+      }
     </div>
   )
 }
