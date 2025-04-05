@@ -22,6 +22,24 @@ export default function App() {
   
   return (
     <main className="min-h-screen bg-gray-50">
+      {/* <button onClick={() => fetch("http://localhost:3000/create-poll", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ question: "What is the best dog breed?", options: ["Labrador", "Poodle", "Poodle", "Poodle"] })
+      })
+      }>Create Poll</button>
+      <button onClick={async () => {
+        const response = await fetch("http://localhost:3000/list-polls", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+        const data = await response.json();
+        console.log(data);
+      }}>List Polls</button> */}
       <PollApp />
     </main>
   );

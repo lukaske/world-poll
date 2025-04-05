@@ -3,11 +3,13 @@ import express from "express";
 import { verifyHandler } from "./src/verify";
 import { initiatePaymentHandler } from "./src/initiate-payment";
 import { confirmPaymentHandler } from "./src/confirm-payment";
+import { createPollHandler } from "./src/create-poll";
+import { listPollsHandler } from "./src/list-polls";
 import cors from "cors";
 
 const app = express();
 
-// trust the proxy to allow HTTPS protocol to be detected
+// trust the proxy to allow HTTPS protocol to be detected 
 // https://expressjs.com/en/guide/behind-proxies.html
 app.set("trust proxy", true);
 // allow cors
@@ -30,6 +32,8 @@ app.get("/ping", (_, res) => {
 app.post("/verify", verifyHandler);
 app.post("/initiate-payment", initiatePaymentHandler);
 app.post("/confirm-payment", confirmPaymentHandler);
+app.post("/create-poll", createPollHandler);
+app.get("/list-polls", listPollsHandler);
 
 const port = 3000; // use env var
 app.listen(port, () => {

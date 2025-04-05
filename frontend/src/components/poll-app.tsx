@@ -12,28 +12,34 @@ import { BottomNavigation } from "@/components/bottom-navigation"
 import { ChatInterface } from "@/components/chat-interface"
 
 // Sample poll data
-const polls = [
-  {
-    id: 1,
-    question: "What's your favorite programming language?",
-    options: ["JavaScript", "Python", "TypeScript", "Java"],
-  },
-  {
-    id: 2,
-    question: "Which framework do you prefer?",
-    options: ["React", "Vue", "Angular", "Svelte"],
-  },
-  {
-    id: 3,
-    question: "What's your preferred deployment platform?",
-    options: ["Vercel", "Netlify", "AWS", "Digital Ocean"],
-  },
-  {
-    id: 4,
-    question: "Which database do you use most often?",
-    options: ["MongoDB", "PostgreSQL", "MySQL", "SQLite"],
-  },
-]
+interface Poll {
+  id: number;
+  question: string;
+  options: string[];
+}
+
+// const polls = [
+//   {
+//     id: 1,
+//     question: "What's your favorite programming language?",
+//     options: ["JavaScript", "Python", "TypeScript", "Java"],
+//   },
+//   {
+//     id: 2,
+//     question: "Which framework do you prefer?",
+//     options: ["React", "Vue", "Angular", "Svelte"],
+//   },
+//   {
+//     id: 3,
+//     question: "What's your preferred deployment platform?",
+//     options: ["Vercel", "Netlify", "AWS", "Digital Ocean"],
+//   },
+//   {
+//     id: 4,
+//     question: "Which database do you use most often?",
+//     options: ["MongoDB", "PostgreSQL", "MySQL", "SQLite"],
+//   },
+// ]
 
 // Badge definitions
 const badges = [
@@ -62,13 +68,43 @@ const badges = [
 ]
 
 export default function PollApp() {
-  const [points, setPoints] = useLocalStorage("poll-points", 0)
-  const [completedPolls, setCompletedPolls] = useLocalStorage("completed-polls", [])
-  const [userBadges, setUserBadges] = useLocalStorage("user-badges", [])
+  const [polls, setPolls] = useState<Poll[]>([])
+  // const [points, setPoints] = useLocalStorage("poll-points", 0)
+  // const [completedPolls, setCompletedPolls] = useLocalStorage("completed-polls", [])
+  // const [userBadges, setUserBadges] = useLocalStorage("user-badges", [])
+  const [points, setPoints] = useState(0)
+  const [completedPolls, setCompletedPolls] = useState<string[]>([])
+  const [userBadges, setUserBadges] = useState<string[]>([])
   const [showBadgesModal, setShowBadgesModal] = useState(false)
   const [animations, setAnimations] = useState<{ id: number; x: number; y: number }[]>([])
   const [newBadge, setNewBadge] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("earn")
+
+  useEffect(() => {
+    setCompletedPolls([])
+    setPoints(0)
+    setUserBadges([])
+  }, [])
+  
+  useEffect(() => {
+    const fetchPolls = async () => {
+      const res = await fetch("http://localhost:3000/list-polls", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      const data = await res.json()
+
+      if (res.status === 200) {
+        setPolls(data)
+      } else {
+        console.log("error fetching polls", data)
+      }
+    }
+    fetchPolls()
+  }, [])
+
 
   // Check for new badges
   useEffect(() => {
@@ -94,7 +130,8 @@ export default function PollApp() {
   }, [points, completedPolls, userBadges, setUserBadges])
 
   // Handle poll completion
-  const handlePollComplete = (pollId: number, event: React.MouseEvent) => {
+  const handlePollComplete = (pollId: string, event: React.MouseEvent) => {
+    console.log("completed polls", completedPolls)
     if (!completedPolls.includes(pollId)) {
       // Add points
       const pointsToAdd = 10
@@ -138,12 +175,12 @@ export default function PollApp() {
             <h1 className="text-2xl font-bold mb-6">Today's Polls</h1>
 
             <div className="space-y-4">
-              {polls.map((poll) => (
+              {polls && polls.map((poll) => (
                 <PollCard
-                  key={poll.id}
+                  key={poll._id}
                   poll={poll}
-                  isCompleted={completedPolls.includes(poll.id)}
-                  onComplete={(e) => handlePollComplete(poll.id, e)}
+                  isCompleted={completedPolls.includes(poll._id)}
+                  onComplete={(e) => handlePollComplete(poll._id, e)}
                 />
               ))}
             </div>
