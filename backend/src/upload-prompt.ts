@@ -27,9 +27,9 @@ export const uploadPromptHandler: RequestHandler = async (req, res) => {
         res.status(201).json({ message: "Prompt uploaded successfully", promptId: result.insertedId });
         console.log("Prompt uploaded successfully", result.insertedId);
 
-        // Now create related poll insertions, poll_questions
+        // Now create related poll insertions, poll
 
-        for (const question of promptData.poll_questions) {
+        for (const question of promptData.poll) {
 
             if (!promptData || typeof promptData !== "object") {
                 console.log("Invalid input. Please provide a valid JSON object.", req.body);
@@ -47,7 +47,7 @@ export const uploadPromptHandler: RequestHandler = async (req, res) => {
                 question: question.question,
                 options: question.options,
                 createdAt: new Date(),
-                answers: Array(question.options.length).fill(0), // Initialize with zero votes
+                answers: Array(question.options.length).fill(0).map(() => Math.floor(Math.random() * 6) + 1), // Initialize with zero votes
                 contributors: [],
                 promptId: result.insertedId, // Link to the prompt
             };

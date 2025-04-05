@@ -4,9 +4,10 @@ import { useState, useRef, useEffect } from "react"
 import { marked } from "marked"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Send, Bot, User } from "lucide-react"
+import { Send, Bot, User, RefreshCcw } from "lucide-react"
 import { handlePay } from "./Pay"
 import { MiniKit, WalletAuthInput } from '@worldcoin/minikit-js'
+import { sample } from "@/components/sample"
 
 import ReactMarkdown from 'react-markdown';
 
@@ -32,16 +33,41 @@ async function closePoll() {
 }
 
 export function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "assistant",
-      content: "Hi! I'm your poll creation assistant. What kind of poll would you like to create today?",
-    },
-  ])
+  const [pollIds, setPollIds] = useState<string[]>(() => {
+    const savedPollIds = localStorage.getItem("pollIds");
+    return savedPollIds ? JSON.parse(savedPollIds) : [];
+  });
+  const [messages, setMessages] = useState<Message[]>(() => {
+    const savedMessages = localStorage.getItem('chatMessages');
+    return savedMessages 
+      ? JSON.parse(savedMessages) 
+      : [{
+          id: "1",
+          role: "assistant",
+          content: "Hi! I'm your poll creation assistant. What kind of poll would you like to create today?",
+        }];
+  });
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    localStorage.setItem('chatMessages', JSON.stringify(messages));
+  }, [messages]);
+
+  const clearChatHistory = () => {
+    localStorage.removeItem("chatMessages");
+    localStorage.removeItem("pollIds");
+    setMessages([
+      {
+        id: "1",
+        role: "assistant",
+        content: "Hi! I'm your poll creation assistant. What kind of poll would you like to create today?",
+      },
+    ]);
+    setPollIds([]);
+  };
+  
 
   // Auto-scroll to bottom of messages
   useEffect(() => {
@@ -65,6 +91,10 @@ export function ChatInterface() {
       console.error('Error sending notification:', error);
     });
   }
+  useEffect(() => {
+    localStorage.setItem("pollIds", JSON.stringify(pollIds));
+  }, [pollIds]);
+
 
   const createPoll = (data) => {
     fetch('http://localhost:3030/upload-prompt', {
@@ -77,6 +107,10 @@ export function ChatInterface() {
     .then(response => response.json())
     .then(data => {
       console.log('Success:', data);
+      if (data.promptId) {
+        setPollIds((prev) => [...prev, data.promptId]);
+      }
+
     })
     .catch((error) => {
       console.error('Error:', error);
@@ -112,7 +146,9 @@ export function ChatInterface() {
   
     }, 1000)
 
+    
     try {
+      /*
       const response = await fetch('http://localhost:8888/research', {
         method: 'POST',
         headers: {
@@ -126,6 +162,11 @@ export function ChatInterface() {
       }
       
       const data = await response.json();
+      */
+      const data = sample
+      // load from sample.ts
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       console.log('Success:', data);
 
 
@@ -179,7 +220,7 @@ export function ChatInterface() {
         
         
         // Display poll
-        const pollQuestions = reportData.poll_questions.map((pollItem, index) => {
+        const pollQuestions = reportData.poll.map((pollItem, index) => {
           const options = pollItem.options.map((option, i) => 
             `${i + 1}. ${option}`
           ).join('\n');
@@ -266,7 +307,7 @@ export function ChatInterface() {
       </div>
 
       <form onSubmit={handleSubmit} className="p-4 border-t">
-        <div className="flex space-x-2">
+        <div className="flex space-x-3">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -277,10 +318,23 @@ export function ChatInterface() {
           <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
             <Send className="h-4 w-4" />
           </Button>
+          <Button size='icon' variant={'ghost'} onClick={clearChatHistory} >
+            <RefreshCcw className="h-4 w-4" />
+          </Button>
+
         </div>
       </form>
       <button onClick={closePoll}>Close poll</button>
       <button onClick={sendNotification}>Send notification</button>
+      {
+        pollIds.length > 0 && (
+          <div className="p-4 flex justify-center">
+          <Button onClick={closePoll}>
+            Active Poll: {pollIds.length > 0 ? `${pollIds[pollIds.length - 1]}` : ""}
+          </Button>
+        </div>  
+        )
+      }
     </div>
   )
 }
