@@ -11,11 +11,14 @@ import { useLocalStorage } from "@/hooks/use-local-storage"
 import { BottomNavigation } from "@/components/bottom-navigation"
 import { ChatInterface } from "@/components/chat-interface"
 
+import { VerifyBlock } from "@/components/Verify"
+
 // Sample poll data
 interface Poll {
   id: number;
   question: string;
   options: string[];
+  answers: number[];
 }
 
 // const polls = [
@@ -86,22 +89,25 @@ export default function PollApp() {
     setUserBadges([])
   }, [])
   
-  useEffect(() => {
-    const fetchPolls = async () => {
-      const res = await fetch("http://localhost:3030/list-polls", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-      const data = await res.json()
-
-      if (res.status === 200) {
-        setPolls(data)
-      } else {
-        console.log("error fetching polls", data)
+  
+  const fetchPolls = async () => {
+    const res = await fetch(
+      import.meta.env.VITE_DEPLOYMENT_URL + "/api/list-polls", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
       }
+    })
+    const data = await res.json()
+
+    if (res.status === 200) {
+      setPolls(data)
+    } else {
+      console.log("error fetching polls", data)
     }
+  }
+
+  useEffect(() => {
     fetchPolls()
   }, [])
 
@@ -130,8 +136,7 @@ export default function PollApp() {
   }, [points, completedPolls, userBadges, setUserBadges])
 
   // Handle poll completion
-  const handlePollComplete = (pollId: string, event: React.MouseEvent) => {
-    console.log("completed polls", completedPolls)
+  const handlePollComplete = async (pollId: string, event: React.MouseEvent, option: string) => {
     if (!completedPolls.includes(pollId)) {
       // Add points
       const pointsToAdd = 10
@@ -153,6 +158,17 @@ export default function PollApp() {
 
       setAnimations((prev) => [...prev, newAnimation])
 
+      await fetch(
+        import.meta.env.VITE_DEPLOYMENT_URL + "/api/update-poll", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ pollId, selectedOption: option }),
+      })
+
+      fetchPolls()
+
       // Remove animation after it completes
       setTimeout(() => {
         setAnimations((prev) => prev.filter((a) => a.id !== newAnimation.id))
@@ -172,15 +188,16 @@ export default function PollApp() {
       <div className="container mx-auto px-4 py-6 pb-24">
         {activeTab === "earn" && (
           <>
+            <h1 className="text-2xl font-bold mb-6">Verify WorldId</h1>
+            <VerifyBlock />
             <h1 className="text-2xl font-bold mb-6">Today's Polls</h1>
-
             <div className="space-y-4">
               {polls && polls.map((poll) => (
                 <PollCard
                   key={poll._id}
                   poll={poll}
                   isCompleted={completedPolls.includes(poll._id)}
-                  onComplete={(e) => handlePollComplete(poll._id, e)}
+                  onComplete={(e, option) => handlePollComplete(poll._id, e, option)}
                 />
               ))}
             </div>

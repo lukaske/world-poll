@@ -10,9 +10,7 @@ const dbName = "world-polls"; // Replace with your database name
 const collectionName = "polls"; // Replace with your collection name
 
 export const createPollHandler: RequestHandler = async (req, res) => {
-    console.log("Creating poll");
-  
-    const { question, options } = req.body;
+    const { question, options, answers } = req.body;
 
   if (!question || !Array.isArray(options) || options.length !== 4) {
     console.log("Invalid input. Please provide a question and exactly four options.", req.body);
@@ -29,6 +27,7 @@ export const createPollHandler: RequestHandler = async (req, res) => {
       question,
       options,
       createdAt: new Date(),
+      answers: answers
     };
 
     const result = await collection.insertOne(poll);

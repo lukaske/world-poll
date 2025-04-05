@@ -57,7 +57,7 @@ export const VerifyBlock = () => {
 
     // Verify the proof in the backend
     const verifyResponse = await fetch(
-      `https://e428-111-235-226-130.ngrok-free.app/api/verify`,
+       import.meta.env.VITE_DEPLOYMENT_URL + "/api/verify",
       {
         method: "POST",
         headers: {
@@ -91,7 +91,7 @@ export const VerifyBlock = () => {
   return (
     <div>
       <h1>Verify Block</h1>
-      <button className="bg-green-500 p-4" onClick={() => { console.log("test", process.env.VITE_NEXTAUTH_URL) }}>
+      <button className="bg-green-500 p-4" onClick={handleVerify}>
         Test Verify
       </button>
       <span>{JSON.stringify(handleVerifyResponse, null, 2)}</span>

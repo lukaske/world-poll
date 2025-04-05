@@ -27,7 +27,7 @@ export default function App() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ question: "What is the best dog breed?", options: ["Labrador", "Poodle", "Poodle", "Poodle"] })
+        body: JSON.stringify({ question: "What is the best dog breed?", options: ["Labrador", "Poodle 1", "Poodle 2", "Poodle 3"], answers: [1, 5, 10, 2] })
       })
       }>Create Poll</button>
       <button onClick={async () => {
