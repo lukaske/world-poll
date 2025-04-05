@@ -4,6 +4,7 @@ import re
 from openai import OpenAI
 
 from dotenv import load_dotenv
+from prompts import PREVIOUS_POLLS_CONTEXT
 
 load_dotenv()
 
@@ -41,6 +42,31 @@ def extract_json_from_report(readme_content, ):
     if json_match:
         result = json_match.group(0)
 
-    # Parse the JSON
     parsed_json = json.loads(result)
     return parsed_json
+
+def analyze_previous_poll_results(previous_poll_results):
+    poll_context = PREVIOUS_POLLS_CONTEXT
+    high_variance_questions = []
+    consensus_questions = []
+
+    for question, responses in previous_poll_results.items():
+        poll_context += f"\nQuestion: {question}\n"
+        total_responses = sum(r['count'] for r in responses)
+
+        for response in responses:
+            percentage = (response['count'] / total_responses) * 100
+            poll_context += f"- {response['option']}: {response['count']} responses ({percentage:.1f}%)\n"
+
+        if len(responses) >= 2:
+            max_response = max(responses, key=lambda x: x['count'])
+            max_percentage = (max_response['count'] / total_responses) * 100
+
+            if max_percentage < 50:
+                high_variance_questions.append(question)
+                poll_context += "Note: This question shows significant response distribution across options, suggesting polarized viewpoints.\n"
+            elif max_percentage > 80:
+                consensus_questions.append(question)
+                poll_context += "Note: This question shows strong consensus around a single viewpoint.\n"
+
+    return poll_context
