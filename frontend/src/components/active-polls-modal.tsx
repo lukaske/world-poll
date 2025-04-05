@@ -139,19 +139,19 @@ export const ActivePollsModal = forwardRef<{ refreshPolls: () => Promise<void> }
         //   }
         // }
 
-       fetch(`${import.meta.env.VITE_DEPLOYMENT_URL}/close-polls`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-       })
-       .then(response => response.json())
-       .then(data => {
-        console.log("Successfully closed polls", data)
-       })
-       .catch(error => {
-        console.error("Error closing polls", error)
-       })
+      //  fetch(`${import.meta.env.VITE_DEPLOYMENT_URL}/close-polls`, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //  })
+      //  .then(response => response.json())
+      //  .then(data => {
+      //   console.log("Successfully closed polls", data)
+      //  })
+      //  .catch(error => {
+      //   console.error("Error closing polls", error)
+      //  })
 
        
         // Update poll status to closed

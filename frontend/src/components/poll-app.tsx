@@ -252,7 +252,7 @@ export default function PollApp() {
         {activeTab === "create" && (
           <div className="flex flex-col h-full">
             <h1 className="text-2xl font-bold mb-4">Create with AI</h1>
-            <p className="text-gray-500 mb-6">Chat with our AI assistant to help you create the perfect poll.</p>
+            {/* <p className="text-gray-500 mb-6">Chat with our AI assistant to help you create the perfect poll.</p> */}
             <ChatInterface />
           </div>
         )}

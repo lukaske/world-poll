@@ -59,7 +59,7 @@ export function ChatInterface() {
       {
         id: "1",
         role: "assistant",
-        content: "Hi! I'm your poll creation assistant. What kind of poll would you like to create today?",
+        content: "Chat with our AI assistant to help you create the perfect poll.",
       },
     ]);
     setPollIds([]);
