@@ -1,3 +1,5 @@
+"use client"
+
 import type React from "react"
 
 import { useState, useEffect } from "react"
@@ -6,6 +8,8 @@ import { PollCard } from "@/components/poll-card"
 import { BadgesModal } from "@/components/badges-modal"
 import { PointAnimation } from "@/components/point-animation"
 import { useLocalStorage } from "@/hooks/use-local-storage"
+import { BottomNavigation } from "@/components/bottom-navigation"
+import { ChatInterface } from "@/components/chat-interface"
 
 // Sample poll data
 const polls = [
@@ -64,6 +68,7 @@ export default function PollApp() {
   const [showBadgesModal, setShowBadgesModal] = useState(false)
   const [animations, setAnimations] = useState<{ id: number; x: number; y: number }[]>([])
   const [newBadge, setNewBadge] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState("earn")
 
   // Check for new badges
   useEffect(() => {
@@ -127,19 +132,31 @@ export default function PollApp() {
     <div className="relative pb-20">
       <Header points={points} badgeCount={userBadges.length} onBadgeClick={() => setShowBadgesModal(true)} />
 
-      <div className="container mx-auto px-4 py-6">
-        <h1 className="text-2xl font-bold mb-6">Today's Polls</h1>
+      <div className="container mx-auto px-4 py-6 pb-24">
+        {activeTab === "earn" && (
+          <>
+            <h1 className="text-2xl font-bold mb-6">Today's Polls</h1>
 
-        <div className="space-y-4">
-          {polls.map((poll) => (
-            <PollCard
-              key={poll.id}
-              poll={poll}
-              isCompleted={completedPolls.includes(poll.id)}
-              onComplete={(e) => handlePollComplete(poll.id, e)}
-            />
-          ))}
-        </div>
+            <div className="space-y-4">
+              {polls.map((poll) => (
+                <PollCard
+                  key={poll.id}
+                  poll={poll}
+                  isCompleted={completedPolls.includes(poll.id)}
+                  onComplete={(e) => handlePollComplete(poll.id, e)}
+                />
+              ))}
+            </div>
+          </>
+        )}
+
+        {activeTab === "create" && (
+          <div className="flex flex-col h-full">
+            <h1 className="text-2xl font-bold mb-4">Create with AI</h1>
+            <p className="text-gray-500 mb-6">Chat with our AI assistant to help you create the perfect poll.</p>
+            <ChatInterface />
+          </div>
+        )}
       </div>
 
       {/* Point animations */}
@@ -149,7 +166,7 @@ export default function PollApp() {
 
       {/* Badge notification */}
       {newBadge && (
-        <div className="fixed bottom-4 left-0 right-0 mx-auto w-[90%] max-w-md bg-white rounded-lg shadow-lg p-4 z-50 border-2 border-yellow-400">
+        <div className="fixed bottom-20 left-0 right-0 mx-auto w-[90%] max-w-md bg-white rounded-lg shadow-lg p-4 z-50 border-2 border-yellow-400">
           <div className="flex items-center">
             <div className="text-3xl mr-3">{badges.find((b) => b.id === newBadge)?.icon}</div>
             <div>
@@ -170,6 +187,9 @@ export default function PollApp() {
         badges={badges}
         userBadges={userBadges}
       />
+
+      {/* Bottom Navigation */}
+      <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   )
 }
