@@ -13,12 +13,13 @@ interface Poll {
   id: number
   question: string
   options: string[]
+  answers: number[]
 }
 
 interface PollCardProps {
   poll: Poll
   isCompleted: boolean
-  onComplete: (event: React.MouseEvent) => void
+  onComplete: (event: React.MouseEvent, option: string) => void
 }
 
 export function PollCard({ poll, isCompleted, onComplete }: PollCardProps) {
@@ -32,7 +33,7 @@ export function PollCard({ poll, isCompleted, onComplete }: PollCardProps) {
 
     // Simulate submission delay
     setTimeout(() => {
-      onComplete(e)
+      onComplete(e, selectedOption)
       setIsSubmitting(false)
     }, 500)
   }
@@ -51,7 +52,7 @@ export function PollCard({ poll, isCompleted, onComplete }: PollCardProps) {
           className="space-y-2"
           disabled={isCompleted}
         >
-          {poll.options.map((option) => (
+          {poll.options.map((option, index) => (
             <div
               key={option}
               className={`flex items-center space-x-2 rounded-md border p-3 transition-colors ${
@@ -66,6 +67,7 @@ export function PollCard({ poll, isCompleted, onComplete }: PollCardProps) {
               <Label htmlFor={`${poll.id}-${option}`} className="w-full cursor-pointer">
                 {option}
               </Label>
+              <p className="text-sm text-gray-500">{((poll.answers[index] / poll.answers.reduce((a, b) => a + b, 0)) * 100).toFixed(0)}%</p>
             </div>
           ))}
         </RadioGroup>
