@@ -6,6 +6,7 @@ import { confirmPaymentHandler } from "./src/confirm-payment";
 import { createPollHandler } from "./src/create-poll";
 import { listPollsHandler } from "./src/list-polls";
 import { updatePollHandler } from "./src/update-poll";
+import { uploadPromptHandler } from "./src/upload-prompt";
 import { nonceHandler } from "./src/nonce";
 import { getUserPointsAndBadgesHandler } from "./src/points-badges";
 import cors from "cors";
@@ -38,6 +39,7 @@ app.post("/confirm-payment", confirmPaymentHandler);
 app.post("/create-poll", createPollHandler);
 app.get("/list-polls", listPollsHandler);
 app.post("/update-poll", updatePollHandler);
+app.post("/upload-prompt", uploadPromptHandler);
 app.get("/nonce", nonceHandler);
 app.get("/points-badges/:walletAddress", getUserPointsAndBadgesHandler);
 

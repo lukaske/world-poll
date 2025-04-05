@@ -39,6 +39,24 @@ export function ChatInterface() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
+  const createPoll = (data) => {
+    fetch('http://localhost:3030/upload-prompt', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Success:', data);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+  }
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim() || isLoading) return
@@ -71,7 +89,7 @@ export function ChatInterface() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ topic: input })
+        body: JSON.stringify({ topic: input + ' please provide some 4 choice poll questions' })
       });
       
       if (!response.ok) {
@@ -80,6 +98,9 @@ export function ChatInterface() {
       
       const data = await response.json();
       console.log('Success:', data);
+
+
+      // Upload response and poll to the database
 
       setIsLoading(false)
 
@@ -112,7 +133,7 @@ export function ChatInterface() {
           const sectionContentMessage: Message = {
             id: (Date.now() + index + 2 + reportData.sections.length).toString(),
             role: "assistant",
-            content: `## ${section.heading}\n\n${section.content}\n\n### Sources\n\n${sourcesContent}`,
+            content: `## ${index +1}. ${section.heading}\n\n${section.content}\n\n### Sources\n\n${sourcesContent}`,
           };
           setMessages((prev) => [...prev, sectionContentMessage]);
           
@@ -147,6 +168,7 @@ export function ChatInterface() {
       };
 
       // Call the function with your data
+      createPoll(data)
       displayReport(data);
 
     } catch (error) {

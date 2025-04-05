@@ -28,7 +28,8 @@ export const createPollHandler: RequestHandler = async (req, res) => {
       options,
       createdAt: new Date(),
       answers: answers,
-      contributors: []
+      contributors: [],
+      initialResponse: null
     };
 
     const result = await collection.insertOne(poll);
