@@ -50,7 +50,6 @@ matplotlib-inline==0.1.7
 multidict==6.3.2
 mypy-extensions==1.0.0
 numpy==2.2.4
-open_deep_research==0.0.10
 openai==1.70.0
 orjson==3.10.16
 ormsgpack==1.9.1
@@ -96,3 +95,5 @@ xxhash==3.5.0
 yarl==1.18.3
 zstandard==0.23.0
 duckduckgo_search==7.5.5
+beautifulsoup4==4.13.3
+langchain-deepseek>=0.1.2
