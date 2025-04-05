@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Send, Bot, User, RefreshCcw } from "lucide-react"
 import { handlePay } from "./Pay"
 import { MiniKit, WalletAuthInput } from '@worldcoin/minikit-js'
+import { sample } from "@/components/sample"
 
 import ReactMarkdown from 'react-markdown';
 
@@ -109,7 +110,9 @@ export function ChatInterface() {
   
     }, 1000)
 
+    
     try {
+      /*
       const response = await fetch('http://localhost:8888/research', {
         method: 'POST',
         headers: {
@@ -123,6 +126,11 @@ export function ChatInterface() {
       }
       
       const data = await response.json();
+      */
+      const data = sample
+      // load from sample.ts
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       console.log('Success:', data);
 
 
