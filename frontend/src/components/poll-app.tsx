@@ -88,7 +88,7 @@ export default function PollApp() {
   
   useEffect(() => {
     const fetchPolls = async () => {
-      const res = await fetch("http://localhost:3000/list-polls", {
+      const res = await fetch("http://localhost:3030/list-polls", {
         method: "GET",
         headers: {
           "Content-Type": "application/json"

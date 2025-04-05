@@ -22,7 +22,7 @@ export default function App() {
   
   return (
     <main className="min-h-screen bg-gray-50">
-      {/* <button onClick={() => fetch("http://localhost:3000/create-poll", {
+      {/* <button onClick={() => fetch("http://localhost:3030/create-poll", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -31,7 +31,7 @@ export default function App() {
       })
       }>Create Poll</button>
       <button onClick={async () => {
-        const response = await fetch("http://localhost:3000/list-polls", {
+        const response = await fetch("http://localhost:3030/list-polls", {
           method: "GET",
           headers: {
             "Content-Type": "application/json"
