@@ -66,12 +66,13 @@ export function ChatInterface() {
 
 
   // Auto-scroll to bottom of messages
-  // useEffect(() => {
-  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  // }, [messages])
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth",  })
+  }, [messages])
 
 
   const sendNotification = async () => {
+    console.log("--- Sending notifications ---")
     
     const res = await fetch(import.meta.env.VITE_DEPLOYMENT_URL + "/get-contributors")
     const { contributors } = await res.json()
@@ -112,13 +113,11 @@ export function ChatInterface() {
       if (data.promptId) {
         setPollIds((prev) => [...prev, data.promptId]);
       }
-
+      sendNotification()
     })
     .catch((error) => {
       console.error('Error:', error);
     });
-
-    sendNotification()
   }
 
         // Assuming you have your data loaded as 'reportData'
