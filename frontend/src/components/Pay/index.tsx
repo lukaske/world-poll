@@ -5,7 +5,7 @@ import {
   PayCommandInput,
 } from "@worldcoin/minikit-js";
 
-const sendPayment = async () => {
+const sendPayment = async (toAddress: string) => {
   try {
     const res = await fetch(
       import.meta.env.VITE_DEPLOYMENT_URL + "/api/initiate-payment",
@@ -16,20 +16,18 @@ const sendPayment = async () => {
 
     const { id } = await res.json();
 
-    console.log(id);
-
     const payload: PayCommandInput = {
       reference: id,
-      to: "0x4c44a6a5af7206b27d37d49e896b67a086e80042", // Test address
+      to: toAddress,
       tokens: [
         {
           symbol: Tokens.WLD,
           token_amount: tokenToDecimals(0.1, Tokens.WLD).toString(),
         },
-        {
-          symbol: Tokens.USDCE,
-          token_amount: tokenToDecimals(0.1, Tokens.USDCE).toString(),
-        },
+        // {
+        //   symbol: Tokens.USDCE,
+        //   token_amount: tokenToDecimals(0.1, Tokens.USDCE).toString(),
+        // },
       ],
       description: "Watch this is a test",
     };
@@ -43,12 +41,12 @@ const sendPayment = async () => {
   }
 };
 
-const handlePay = async () => {
+const handlePay = async (toAddress: string) => {
   if (!MiniKit.isInstalled()) {
     console.error("MiniKit is not installed");
     return;
   }
-  const sendPaymentResponse = await sendPayment();
+  const sendPaymentResponse = await sendPayment(toAddress);
   const response = sendPaymentResponse?.finalPayload;
   if (!response) {
     return;
@@ -75,7 +73,7 @@ const handlePay = async () => {
 
 export const PayBlock = () => {
   return (
-    <button className="bg-blue-500 p-4" onClick={handlePay}>
+    <button className="bg-blue-500 p-4" onClick={() => handlePay("0x4c44a6a5af7206b27d37d49e896b67a086e80042")}>
       Pay
     </button>
   );

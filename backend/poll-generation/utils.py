@@ -8,25 +8,42 @@ from prompts import PREVIOUS_POLLS_CONTEXT
 
 load_dotenv()
 
-def extract_json_from_report(readme_content, ):
+
+def extract_json_from_report(content):
     api_key = os.environ.get("OPENAI_API_KEY")
     if api_key is None:
         raise ValueError("OpenAI API key must be provided or set as OPENAI_API_KEY environment variable")
 
     client = OpenAI(api_key=api_key)
 
-    prompt = f"""
-    You are a helpful assistant. You will receive a report, and your task is to convert it into structured JSON format. The JSON structure should include:
-        - A title of the report
-        - An introduction
-        - Multiple sections (each with a heading and content)
-        - Sources for each section (with title and URL)
-        - Conclusion section
-        - Poll questions and options
-
+    prompt = """
+    The JSON structure should be the following:
+    {
+      "title": "string",
+      "introduction": "string",
+      "sections": [
+        {
+          "heading": "string",
+          "content": "string",
+          "sources": [
+            {
+              "title": "string",
+              "url": "string"
+            }
+          ]
+        }
+      ],
+      "conclusion": "string",
+      "poll": [
+        {
+          "question": "string",
+          "options": ["string"]
+        }
+      ]
+    }
     Here is the report you need to structure:
-    {readme_content}
-    """
+    
+    """ + content
 
     response = client.chat.completions.create(
         model="gpt-4o",
@@ -44,6 +61,7 @@ def extract_json_from_report(readme_content, ):
 
     parsed_json = json.loads(result)
     return parsed_json
+
 
 def analyze_previous_poll_results(previous_poll_results):
     poll_context = PREVIOUS_POLLS_CONTEXT

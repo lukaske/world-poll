@@ -61,7 +61,10 @@ export const updatePollHandler: RequestHandler = async (req, res) => {
 
         const updateResult = await collection.updateOne(
             { _id: ObjectId.createFromHexString(pollId) },
-            { $inc: { [`answers.${optionIndex}`]: 1 } } // Increment the count for the selected option
+            { 
+                $inc: { [`answers.${optionIndex}`]: 1 }, // Increment the count for the selected option
+                $addToSet: { contributors: userAddress } // Add userAddress to contributors if not already present
+            }
         );
 
         if (updateResult.modifiedCount === 0) {
