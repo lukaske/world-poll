@@ -33,6 +33,10 @@ async function closePoll() {
 }
 
 export function ChatInterface() {
+  const [pollIds, setPollIds] = useState<string[]>(() => {
+    const savedPollIds = localStorage.getItem("pollIds");
+    return savedPollIds ? JSON.parse(savedPollIds) : [];
+  });
   const [messages, setMessages] = useState<Message[]>(() => {
     const savedMessages = localStorage.getItem('chatMessages');
     return savedMessages 
@@ -52,12 +56,16 @@ export function ChatInterface() {
   }, [messages]);
 
   const clearChatHistory = () => {
-    localStorage.removeItem('chatMessages');
-    setMessages([{
-      id: "1",
-      role: "assistant",
-      content: "Hi! I'm your poll creation assistant. What kind of poll would you like to create today?",
-    }]);
+    localStorage.removeItem("chatMessages");
+    localStorage.removeItem("pollIds");
+    setMessages([
+      {
+        id: "1",
+        role: "assistant",
+        content: "Hi! I'm your poll creation assistant. What kind of poll would you like to create today?",
+      },
+    ]);
+    setPollIds([]);
   };
   
 
@@ -65,6 +73,11 @@ export function ChatInterface() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
+
+  useEffect(() => {
+    localStorage.setItem("pollIds", JSON.stringify(pollIds));
+  }, [pollIds]);
+
 
   const createPoll = (data) => {
     fetch('http://localhost:3030/upload-prompt', {
@@ -77,6 +90,10 @@ export function ChatInterface() {
     .then(response => response.json())
     .then(data => {
       console.log('Success:', data);
+      if (data.promptId) {
+        setPollIds((prev) => [...prev, data.promptId]);
+      }
+
     })
     .catch((error) => {
       console.error('Error:', error);
@@ -288,7 +305,15 @@ export function ChatInterface() {
 
         </div>
       </form>
-      <button onClick={closePoll}>Close poll</button>
+      {
+        pollIds.length > 0 && (
+          <div className="p-4 flex justify-center">
+          <Button onClick={closePoll}>
+            Active Poll: {pollIds.length > 0 ? `${pollIds[pollIds.length - 1]}` : ""}
+          </Button>
+        </div>  
+        )
+      }
     </div>
   )
 }
