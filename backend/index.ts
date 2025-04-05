@@ -35,7 +35,7 @@ app.post("/confirm-payment", confirmPaymentHandler);
 app.post("/create-poll", createPollHandler);
 app.get("/list-polls", listPollsHandler);
 
-const port = 3000; // use env var
+const port = 3030; // use env var
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
