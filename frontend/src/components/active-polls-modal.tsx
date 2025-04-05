@@ -199,7 +199,7 @@ export const ActivePollsModal = forwardRef<{ refreshPolls: () => Promise<void> }
               <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
                 {polls.map((poll) => (
                   <div key={poll._id} className="border rounded-lg p-4">
-                    <div className="text-xs text-muted-foreground mb-2">Poll ID: {poll._id}</div>
+                    {/* <div className="text-xs text-muted-foreground mb-2">Poll ID: {poll._id}</div> */}
                     <h3 className="font-bold mb-2">{poll.question}</h3>
 
                     <div className="space-y-2 mb-4">

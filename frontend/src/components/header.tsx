@@ -5,6 +5,13 @@ import { Badge } from "@/components/ui/badge"
 import { useState, useEffect, useCallback } from "react"
 import { MiniKit, RequestPermissionPayload, Permission } from '@worldcoin/minikit-js'
 
+import logo from '../logo.png';
+
+const Logo = () => (
+  <img src={logo} alt="Logo" className="h-8 w-auto" />
+);
+
+
 interface HeaderProps {
   userPoints: number
   badgeCount: number
@@ -60,9 +67,8 @@ export function Header({ userPoints, badgeCount, onBadgeClick, setUserBadges, se
     <header className="sticky top-0 z-10 bg-white shadow-sm">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold">PollMaster</h1>
-
-          
+          <Logo />
+          <h1 className="text-3xl font-bold">PollMaster</h1>
 
             {/* Badges button */}
             { walletAddress !== undefined && walletAddress !== null ? (
