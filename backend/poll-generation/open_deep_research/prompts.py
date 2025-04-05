@@ -238,10 +238,30 @@ For Conclusion/Summary:
 - End with specific next steps or implications
 - No sources section needed
 
+For Poll
+- Create 3 multiple choice questions specifically targeting subjective aspects of the topic that are:
+ * Vulnerable to online manipulation by bots or coordinated campaigns
+ * Open to opinion, personal bias, or ideological interpretation
+ * Frequently debated or contested in online spaces
+- Requirements for each question:
+ * Keep questions concise (15-25 words maximum)
+ * Design questions to reveal potential opinion manipulation or polarization
+ * Address areas where factual information might be overshadowed by personal beliefs
+ * Provide 3-4 distinct answer options that span the spectrum of common viewpoints
+ * Format options as brief phrases rather than full sentences
+- When previous poll results are provided:
+ * Do not repeat questions that were already asked
+ * Create follow-up questions that dive deeper into the most polarizing or consensus topics from previous polls
+ * Design questions that explore underlying reasons for the response patterns observed
+ * Focus on aspects that build upon rather than duplicate the insights from previous polls
+
 3. Writing Approach:
 - Use concrete details over general statements
 - Make every word count
 - Focus on your single most important point
+- Make sure that for the facts that are subjective or prone to manipulation, you reference them in the poll
+- When creating the poll, ensure that the questions are not too leading or biased
+- Avoid repeating the questions from the previous poll, instead, create follow-up questions that dive deeper into the most polarizing or consensus topics from previous polls
 </Task>
 
 <Quality Checks>

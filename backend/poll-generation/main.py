@@ -7,7 +7,6 @@ from open_deep_research.graph import builder
 from pydantic import BaseModel
 from typing import Dict, List, Optional
 from dotenv import load_dotenv
-import uuid
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException
 from utils import analyze_previous_poll_results, extract_json_from_report
@@ -38,10 +37,10 @@ async def generate_research(request: ResearchRequest):
             "thread_id": str(uuid.uuid4()),
             "search_api": "tavily",
             "planner_provider": "openai",
-            "planner_model": "o3-mini",
+            "planner_model": "gpt-4o",
             "writer_provider": "openai",
-            "writer_model": "o3-mini",
-            "max_search_depth": 1,
+            "writer_model": "gpt-4o",
+            "max_search_depth": 1, # in order to make everything faster
             "report_structure": REPORT_STRUCTURE
         }
     }
