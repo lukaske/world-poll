@@ -7,6 +7,8 @@ Apart from a frontend, you'll need a backend, this template contains an example 
 - deps, `cd frontend;pnpm i;cd -;cd backend;pnpm i`
 - ngrok - Create a free ngrok account, follow the official [docs](https://ngrok.com/docs/getting-started/)
 - nginx - use you favorite package manager :)
+- Create venv: `python3 -m venv .venv` in the world-poll folder
+- `source .venv/bin/activate` - to activate the virtual environment, run `pip install -r requirements.txt` to install the backend dependencies
 
 ### nginx setup
 
