@@ -14,7 +14,7 @@ const dbName = "world-polls"; // Replace with your database name
 const collectionName = "polls"; // Replace with your collection name
 
 export const updatePollHandler: RequestHandler = async (req, res) => {
-    const { pollId, selectedOption, payloadGlobalData } = req.body;
+    const { pollId, selectedOption, payloadGlobalData, userAddress } = req.body;
     console.log("Payload global data.", payloadGlobalData);
     
     if (!pollId || !selectedOption) {
@@ -70,6 +70,32 @@ export const updatePollHandler: RequestHandler = async (req, res) => {
         }
 
         console.log("Poll updated successfully.");
+
+        console.log("User address:", userAddress);
+
+        const userCollection = database.collection("users");
+        // Check if the user already exists
+        let user = await userCollection.findOne({ address: userAddress });
+
+        if (!user) {
+            // User does not exist, create a new user with 10 points
+            user = {
+                _id: new ObjectId(),
+                address: userAddress,
+                points: 10,
+                badges: ["first_poll"]
+            };
+            await userCollection.insertOne(user);
+        } else {
+            // User exists, update points and badges
+            await userCollection.updateOne(
+                { address: userAddress },
+                { 
+                    $inc: { points: 10 }, // Increment points by 10
+                    $addToSet: { badges: "first_poll" } // Add badge if not already present
+                }
+            );
+        }
 
         res.status(200).json({ message: "Poll updated successfully." });
     } catch (error) {
