@@ -124,18 +124,12 @@ export function ChatInterface() {
         // Assuming you have your data loaded as 'reportData'
         const displayReport = (reportData) => {
           // Display title
-          const titleMessage = {
-            id: Date.now().toString(),
-            role: "assistant",
-            content: `# ${reportData.title}`,
-          };
-          setMessages((prev) => [...prev, titleMessage]);
           
           // Display introduction
           const introMessage: Message = {
             id: (Date.now() + 1).toString(),
             role: "assistant",
-            content: `## Introduction\n\n${reportData.introduction}`,
+            content: `# ${reportData.title}\n\n## Introduction\n\n${reportData.introduction}`,
           };
           setMessages((prev) => [...prev, introMessage]);
           
