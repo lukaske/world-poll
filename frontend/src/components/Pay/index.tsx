@@ -8,7 +8,7 @@ import {
 const sendPayment = async (toAddress: string) => {
   try {
     const res = await fetch(
-      import.meta.env.VITE_DEPLOYMENT_URL + "/api/initiate-payment",
+      import.meta.env.VITE_DEPLOYMENT_URL + "/initiate-payment",
       {
         method: "POST",
       }
@@ -54,7 +54,7 @@ const handlePay = async (toAddress: string) => {
 
   if (response.status == "success") {
     const res = await fetch(
-      import.meta.env.VITE_DEPLOYMENT_URL + "/api/confirm-payment",
+      import.meta.env.VITE_DEPLOYMENT_URL + "/confirm-payment",
       {
       method: "POST",
       headers: { "Content-Type": "application/json" },

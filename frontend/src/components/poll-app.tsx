@@ -102,11 +102,17 @@ export default function PollApp() {
     setPoints(0)
     setUserBadges([])
   }, [])
+
+  useEffect(() => {
+    if (activeTab === "earn") {
+      fetchPolls()
+    }
+  }, [activeTab])
   
   
   const fetchPolls = async () => {
     const res = await fetch(
-      import.meta.env.VITE_DEPLOYMENT_URL + "/api/list-polls", {
+      import.meta.env.VITE_DEPLOYMENT_URL + "/list-polls", {
       method: "GET",
       headers: {
         "Content-Type": "application/json"
@@ -174,7 +180,7 @@ export default function PollApp() {
       console.log("User address local", MiniKit.walletAddress);
       
       await fetch(
-        import.meta.env.VITE_DEPLOYMENT_URL + "/api/update-poll", {
+        import.meta.env.VITE_DEPLOYMENT_URL + "/update-poll", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

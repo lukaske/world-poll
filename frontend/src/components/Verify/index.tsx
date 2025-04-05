@@ -57,7 +57,7 @@ export const VerifyBlock = () => {
 
     // Verify the proof in the backend
     const verifyResponse = await fetch(
-       import.meta.env.VITE_DEPLOYMENT_URL + "/api/verify",
+       import.meta.env.VITE_DEPLOYMENT_URL + "/verify",
       {
         method: "POST",
         headers: {

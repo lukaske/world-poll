@@ -8,8 +8,10 @@ import { Send, Bot, User, RefreshCcw } from "lucide-react"
 import { handlePay } from "./Pay"
 import { MiniKit, WalletAuthInput } from '@worldcoin/minikit-js'
 import { sample } from "@/components/sample"
+import { ParentComponent } from "@/components/ParentComponent"
 
 import ReactMarkdown from 'react-markdown';
+import { ActivePollsModal } from "./active-polls-modal"
 
 
 interface Message {
@@ -226,14 +228,35 @@ export function ChatInterface() {
       
       console.error('Error:', error);
     }
-
-
-
   }
+
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const modalRef = useRef<{ refreshPolls: () => Promise<void> }>(null);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const refreshPolls = async () => {
+    if (modalRef.current) {
+      await modalRef.current.refreshPolls();
+    }
+  };
+
   
 
   return (
     <div className="flex flex-col h-[calc(100vh-16rem)]">
+      <ActivePollsModal
+        ref={modalRef}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+      />
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
           <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -308,7 +331,7 @@ export function ChatInterface() {
       {
         pollIds.length > 0 && (
           <div className="p-4 flex justify-center">
-          <Button onClick={closePoll}>
+          <Button onClick={openModal}>
             Active Poll: {pollIds.length > 0 ? `${pollIds[pollIds.length - 1]}` : ""}
           </Button>
         </div>  
