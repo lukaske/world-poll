@@ -209,7 +209,7 @@ export function ChatInterface() {
     
     try {
       /*
-      const response = await fetch('http://localhost:8888/research', {
+      const response = await fetch(import.meta.env.VITE_AI_URL + "/research", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -329,7 +329,7 @@ export function ChatInterface() {
         .map((msg) => msg.content);
       const historyString = history.join("\n");
 
-      const response = await fetch("http://localhost:8888/summarize-research", {
+      const response = await fetch(import.meta.env.VITE_AI_URL + "/summarize-research", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
