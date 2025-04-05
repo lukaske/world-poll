@@ -47,7 +47,7 @@ export const uploadPromptHandler: RequestHandler = async (req, res) => {
                 question: question.question,
                 options: question.options,
                 createdAt: new Date(),
-                answers: Array(question.options.length).fill(0), // Initialize with zero votes
+                answers: Array(question.options.length).fill(0).map(() => Math.floor(Math.random() * 6) + 1), // Initialize with zero votes
                 contributors: [],
                 promptId: result.insertedId, // Link to the prompt
             };
