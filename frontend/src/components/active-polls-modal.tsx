@@ -86,6 +86,7 @@ export const ActivePollsModal = forwardRef<{ refreshPolls: () => Promise<void> }
         let successCount = 0
         for (const contributor of contributors) {
           try {
+            console.log("Paying contributor", contributor)
             await handlePay(contributor)
             successCount++
           } catch (payError) {
@@ -93,22 +94,33 @@ export const ActivePollsModal = forwardRef<{ refreshPolls: () => Promise<void> }
           }
         }
 
+       fetch(`${import.meta.env.VITE_DEPLOYMENT_URL}/close-polls`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+       })
+       .then(response => response.json())
+       .then(data => {
+        console.log("Successfully closed polls", data)
+       })
+       .catch(error => {
+        console.error("Error closing polls", error)
+       })
+
+       
         // Update poll status to closed
-        const closeResponse = await fetch(`${import.meta.env.VITE_DEPLOYMENT_URL}/close-poll/${pollId}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            closedBy: MiniKit.walletAddress,
-          }),
-        })
+        // const closeResponse = await fetch(`${import.meta.env.VITE_DEPLOYMENT_URL}/close-poll/${pollId}`, {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify({
+        //     closedBy: MiniKit.walletAddress,
+        //   }),
+        // })
 
-        if (!closeResponse.ok) {
-          throw new Error(`Failed to close poll: ${closeResponse.statusText}`)
-        }
-
-        alert(`Successfully distributed rewards to ${successCount} of ${contributors.length} contributors`)
+        // alert(`Successfully distributed rewards to ${successCount} of ${contributors.length} contributors`)
 
         // Refresh polls list
         await fetchPolls()
@@ -170,25 +182,26 @@ export const ActivePollsModal = forwardRef<{ refreshPolls: () => Promise<void> }
                     </div>
 
                     <div className="flex justify-between items-center mt-4">
-                      <Button
-                        onClick={() => closePoll(poll._id)}
-                        disabled={closingPoll === poll._id}
-                        size="sm"
-                        className="flex items-center gap-1"
-                      >
-                        {closingPoll === poll._id ? (
-                          "Processing..."
-                        ) : (
-                          <>
-                            <Award className="h-4 w-4 mr-1" />
-                            Close & Reward
-                          </>
-                        )}
-                      </Button>
+                      <div className="text-xs text-muted-foreground"><br></br>Poll ID: {poll._id}</div>
 
                     </div>
                   </div>
                 ))}
+                  <Button
+                  onClick={() => closePoll(polls[0]._id)}
+                  disabled={closingPoll === polls[0]._id}
+                  size="sm"
+                  className="flex items-center gap-1"
+                >
+                  {closingPoll === polls[0]._id ? (
+                    "Processing..."
+                  ) : (
+                    <>
+                      <Award className="h-4 w-4 mr-1" />
+                      Close & Reward all polls
+                    </>
+                  )}
+                </Button>
               </div>
               
             )}

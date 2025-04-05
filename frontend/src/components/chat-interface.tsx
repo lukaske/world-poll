@@ -103,7 +103,7 @@ export function ChatInterface() {
 
 
   const createPoll = (data) => {
-    fetch('http://localhost:3030/upload-prompt', {
+    fetch(import.meta.env.VITE_DEPLOYMENT_URL + '/upload-prompt', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -343,14 +343,16 @@ export function ChatInterface() {
         {messages.map((message) => (
           <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
-              className={`flex items-start space-x-2 max-w-[80%] ${
+              className={`flex items-start space-x-2 max-w-[100%] ${
                 message.role === "user" ? "flex-row-reverse space-x-reverse" : ""
               }`}
+              style={{ flexDirection: "column"}}
             >
               <div
                 className={`flex-shrink-0 rounded-full p-2 ${
                   message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                 }`}
+                style={{ display: "block", marginBottom: "10px", marginTop: "20px"}}
               >
                 {message.role === "user" ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
               </div>
@@ -478,7 +480,7 @@ export function ChatInterface() {
         ))}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="flex items-start space-x-2 max-w-[80%]">
+            <div className="flex items-start space-x-2 max-w-[100%]">
               <div className="flex-shrink-0 rounded-full p-2 bg-muted text-muted-foreground">
                 <Bot className="h-4 w-4" />
               </div>
