@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { marked } from "marked"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Send, Bot, User, RefreshCcw } from "lucide-react"
+import { Send, Bot, User, RefreshCcw, StepForward } from "lucide-react"
 import { handlePay } from "./Pay"
 import { MiniKit, WalletAuthInput } from '@worldcoin/minikit-js'
 import { sample } from "@/components/sample"
@@ -12,6 +12,7 @@ import { ParentComponent } from "@/components/ParentComponent"
 
 import ReactMarkdown from 'react-markdown';
 import { ActivePollsModal } from "./active-polls-modal"
+import { json } from "stream/consumers"
 
 
 interface Message {
@@ -57,6 +58,11 @@ export function ChatInterface() {
     localStorage.setItem('chatMessages', JSON.stringify(messages));
   }, [messages]);
 
+  useEffect(() => {
+    localStorage.setItem("pollIds", JSON.stringify(pollIds));
+  }, [pollIds]);
+
+
   const clearChatHistory = () => {
     localStorage.removeItem("chatMessages");
     localStorage.removeItem("pollIds");
@@ -70,6 +76,7 @@ export function ChatInterface() {
     setPollIds([]);
   };
   
+
 
   // Auto-scroll to bottom of messages
   useEffect(() => {
@@ -93,9 +100,6 @@ export function ChatInterface() {
       console.error('Error sending notification:', error);
     });
   }
-  useEffect(() => {
-    localStorage.setItem("pollIds", JSON.stringify(pollIds));
-  }, [pollIds]);
 
 
   const createPoll = (data) => {
@@ -120,6 +124,69 @@ export function ChatInterface() {
 
     sendNotification()
   }
+
+        // Assuming you have your data loaded as 'reportData'
+        const displayReport = (reportData) => {
+          // Display title
+          const titleMessage = {
+            id: Date.now().toString(),
+            role: "assistant",
+            content: `# ${reportData.title}`,
+          };
+          setMessages((prev) => [...prev, titleMessage]);
+          
+          // Display introduction
+          const introMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            role: "assistant",
+            content: `## Introduction\n\n${reportData.introduction}`,
+          };
+          setMessages((prev) => [...prev, introMessage]);
+          
+          // Display each section
+          reportData.sections.forEach((section, index) => {      
+            // Sources for this section
+            const sourcesContent = section.sources.map(source => 
+              `- [${source.title}](${source.url})`
+            ).join('\n');
+                
+            // Section head & content
+            const sectionContentMessage: Message = {
+              id: (Date.now() + index + 2 + reportData.sections.length).toString(),
+              role: "assistant",
+              content: `## ${index +1}. ${section.heading}\n\n${section.content}\n\n### Sources\n\n${sourcesContent}`,
+            };
+            setMessages((prev) => [...prev, sectionContentMessage]);
+            
+                  
+          })
+  
+          // Display conclusion
+          const conclusionMessage: Message = {
+            id: (Date.now() + reportData.sections.length * 3 + 2).toString(),
+            role: "assistant",
+            content: `## Conclusion\n\n${reportData.conclusion}`,
+          };
+          setMessages((prev) => [...prev, conclusionMessage]);
+          
+          
+          // Display poll
+          const pollQuestions = reportData.poll.map((pollItem, index) => {
+            const options = pollItem.options.map((option, i) => 
+              `${i + 1}. ${option}`
+            ).join('\n');
+            
+            return `**Q${index + 1}: ${pollItem.question}**\n${options}`;
+          }).join('\n\n');
+          
+          const pollMessage: Message = {
+            id: (Date.now() + reportData.sections.length * 3 + 3).toString(),
+            role: "assistant",
+            content: `## Poll Questions\n\n${pollQuestions}\n\n`,
+          };
+          setMessages((prev) => [...prev, pollMessage]);
+        
+        };
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -176,69 +243,6 @@ export function ChatInterface() {
 
       setIsLoading(false)
 
-      // Assuming you have your data loaded as 'reportData'
-      const displayReport = (reportData) => {
-        // Display title
-        const titleMessage = {
-          id: Date.now().toString(),
-          role: "assistant",
-          content: `# ${reportData.title}`,
-        };
-        setMessages((prev) => [...prev, titleMessage]);
-        
-        // Display introduction
-        const introMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          role: "assistant",
-          content: `## Introduction\n\n${reportData.introduction}`,
-        };
-        setMessages((prev) => [...prev, introMessage]);
-        
-        // Display each section
-        reportData.sections.forEach((section, index) => {      
-          // Sources for this section
-          const sourcesContent = section.sources.map(source => 
-            `- [${source.title}](${source.url})`
-          ).join('\n');
-              
-          // Section head & content
-          const sectionContentMessage: Message = {
-            id: (Date.now() + index + 2 + reportData.sections.length).toString(),
-            role: "assistant",
-            content: `## ${index +1}. ${section.heading}\n\n${section.content}\n\n### Sources\n\n${sourcesContent}`,
-          };
-          setMessages((prev) => [...prev, sectionContentMessage]);
-          
-                
-        })
-
-        // Display conclusion
-        const conclusionMessage: Message = {
-          id: (Date.now() + reportData.sections.length * 3 + 2).toString(),
-          role: "assistant",
-          content: `## Conclusion\n\n${reportData.conclusion}`,
-        };
-        setMessages((prev) => [...prev, conclusionMessage]);
-        
-        
-        // Display poll
-        const pollQuestions = reportData.poll.map((pollItem, index) => {
-          const options = pollItem.options.map((option, i) => 
-            `${i + 1}. ${option}`
-          ).join('\n');
-          
-          return `**Q${index + 1}: ${pollItem.question}**\n${options}`;
-        }).join('\n\n');
-        
-        const pollMessage: Message = {
-          id: (Date.now() + reportData.sections.length * 3 + 3).toString(),
-          role: "assistant",
-          content: `## Poll Questions\n\n${pollQuestions}`,
-        };
-        setMessages((prev) => [...prev, pollMessage]);
-      
-      };
-
       // Call the function with your data
       createPoll(data)
       displayReport(data);
@@ -247,6 +251,65 @@ export function ChatInterface() {
       
       console.error('Error:', error);
     }
+  }
+
+  const handleIterate = async (pollResults)  => {
+        const initialMessage: Message[] = messages.filter((msg) => msg.role == 'user')
+        const iteratedInput = initialMessage[initialMessage.length - 1].content + '\n\n Please think of further questions to deep explore this topic based on the following collected poll data: ' + JSON.stringify(pollResults)
+        
+        const userMessage: Message = {
+          id: Date.now().toString(),
+          role: "user",
+          content: iteratedInput,
+        }
+        setMessages((prev) => [...prev, userMessage])
+        setInput("")
+        setIsLoading(true)
+    
+        setTimeout(() => {
+          const assistantMessage: Message = {
+            id: Date.now().toString(),
+            role: "assistant",
+            content: "Thinking about collected data, proposing new polls... hang tight!",
+          }
+          setMessages((prev) => [...prev, assistantMessage])
+              // Call LLM endpoint using fetch
+      
+        }, 1000)
+
+        try {
+          
+          const response = await fetch('http://localhost:8888/research', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ topic: iteratedInput + ' please provide some 4 choice poll questions' })
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+    
+          console.log('Success:', data);
+    
+    
+          // Upload response and poll to the database
+    
+          setIsLoading(false)
+    
+          // Call the function with your data
+          createPoll(data)
+          displayReport(data);
+    
+        } catch (error) {
+          
+          console.error('Error:', error);
+        }
+    
   }
 
 
@@ -299,6 +362,118 @@ export function ChatInterface() {
                 }`}
               >
                  <ReactMarkdown>{message.content}</ReactMarkdown>
+                 {message.content.includes("Poll Questions") && (
+                  <>
+                    <div className="text-xs text-muted-foreground mb-2 ">
+                      Questions submitted to users! <br></br>Collect feedback to continue generating
+                    </div>
+                    <Button className="py-4" onClick={() => handleIterate([{
+  "_id": {
+    "$oid": "67f182aae619802903ea290f"
+  },
+  "question": "Which innovative coffee flavor should we introduce?",
+  "options": [
+    "Caramel",
+    "Hazelnut",
+    "Vanilla",
+    "Mocha"
+  ],
+  "createdAt": {
+    "$date": "2025-04-05T19:21:14.350Z"
+  },
+  "answers": [
+    2,
+    3,
+    2,
+    5
+  ],
+  "contributors": [],
+  "promptId": {
+    "$oid": "67f182aae619802903ea290e"
+  }
+},
+{
+  "_id": {
+    "$oid": "67f182aae619802903ea2910"
+  },
+  "question": "Which functional ingredient would enhance your coffee experience?",
+  "options": [
+    "Mushroom extract",
+    "Turmeric",
+    "Collagen",
+    "None"
+  ],
+  "createdAt": {
+    "$date": "2025-04-05T19:21:14.554Z"
+  },
+  "answers": [
+    6,
+    6,
+    5,
+    1
+  ],
+  "contributors": [],
+  "promptId": {
+    "$oid": "67f182aae619802903ea290e"
+  }
+},
+{
+  "_id": {
+    "$oid": "67f182aae619802903ea2911"
+  },
+  "question": "What sustainability feature is most important?",
+  "options": [
+    "Organic sourcing",
+    "Eco-friendly packaging",
+    "Fair-trade practices",
+    "Local sourcing"
+  ],
+  "createdAt": {
+    "$date": "2025-04-05T19:21:14.758Z"
+  },
+  "answers": [
+    2,
+    1,
+    4,
+    4
+  ],
+  "contributors": [],
+  "promptId": {
+    "$oid": "67f182aae619802903ea290e"
+  }
+},
+{
+  "_id": {
+    "$oid": "67f182aae619802903ea2912"
+  },
+  "question": "How do you prefer your coffee served?",
+  "options": [
+    "Hot",
+    "Iced",
+    "Ready-to-drink",
+    "Specialty brews"
+  ],
+  "createdAt": {
+    "$date": "2025-04-05T19:21:14.962Z"
+  },
+  "answers": [
+    1,
+    3,
+    4,
+    6
+  ],
+  "contributors": [],
+  "promptId": {
+    "$oid": "67f182aae619802903ea290e"
+  }
+}])} disabled={isLoading}>
+                        Iterate based on feedback
+                      <StepForward className="h-4 w-4" />
+                    </Button>
+                  </>
+                 )}
+
+
               </div>
             </div>
           </div>
@@ -351,15 +526,6 @@ export function ChatInterface() {
       </form>
       <button onClick={closePoll}>Close poll</button>
       <button onClick={sendNotification}>Send notification</button>
-      {
-        pollIds.length > 0 && (
-          <div className="p-4 flex justify-center">
-          <Button onClick={openModal}>
-            Active Poll: {pollIds.length > 0 ? `${pollIds[pollIds.length - 1]}` : ""}
-          </Button>
-        </div>  
-        )
-      }
     </div>
   )
 }
