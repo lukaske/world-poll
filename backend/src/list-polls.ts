@@ -18,7 +18,6 @@ export const listPollsHandler: RequestHandler = async (_req, res) => {
 
     const polls = await collection.find({}).toArray();
     res.status(200).json(polls);
-    console.log("Polls retrieved successfully", polls);
   } catch (error) {
     console.error("Error retrieving polls:", error);
     res.status(500).json({ error: "An error occurred while retrieving the polls." });

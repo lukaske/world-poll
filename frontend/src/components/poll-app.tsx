@@ -12,6 +12,8 @@ import { BottomNavigation } from "@/components/bottom-navigation"
 import { ChatInterface } from "@/components/chat-interface"
 
 import { VerifyBlock } from "@/components/Verify"
+import { ISuccessResult } from "@worldcoin/minikit-js"
+import { MiniKit, VerificationLevel } from "@worldcoin/minikit-js"
 
 // Sample poll data
 interface Poll {
@@ -20,6 +22,18 @@ interface Poll {
   options: string[];
   answers: number[];
 }
+
+export type VerifyCommandInput = {
+  action: string;
+  signal?: string;
+  verification_level?: VerificationLevel; // Default: Orb
+};
+
+const verifyPayload: VerifyCommandInput = {
+  action: "test-action", // This is your action ID from the Developer Portal
+  signal: "",
+  verification_level: VerificationLevel.Orb, // Orb | Device
+};
 
 // const polls = [
 //   {
@@ -138,6 +152,40 @@ export default function PollApp() {
   // Handle poll completion
   const handlePollComplete = async (pollId: string, event: React.MouseEvent, option: string) => {
     if (!completedPolls.includes(pollId)) {
+
+      let finalPayloadGlobal = null;
+
+      if (MiniKit.isInstalled()) {
+        console.log("WORKING")
+
+        const { finalPayload } = await MiniKit.commandsAsync.verify(verifyPayload);
+    
+        console.log("FINAL PAYLOAD", JSON.stringify(finalPayload));
+    
+        // no need to verify if command errored
+        if (finalPayload.status === "error") {
+          console.log("Command error");
+          console.log(finalPayload);
+        }
+        console.log("FINAL PAYLOAD", finalPayload)  
+        finalPayloadGlobal = finalPayload;
+      }
+      
+      await fetch(
+        import.meta.env.VITE_DEPLOYMENT_URL + "/api/update-poll", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ pollId, selectedOption: option, payloadGlobalData: JSON.stringify({
+          payload: finalPayloadGlobal as ISuccessResult, // Parses only the fields we need to verify
+          action: verifyPayload.action,
+          signal: verifyPayload.signal, // Optional
+        }) }),
+      })
+      
+      fetchPolls()
+
       // Add points
       const pointsToAdd = 10
       setPoints(points + pointsToAdd)
@@ -158,17 +206,6 @@ export default function PollApp() {
 
       setAnimations((prev) => [...prev, newAnimation])
 
-      await fetch(
-        import.meta.env.VITE_DEPLOYMENT_URL + "/api/update-poll", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ pollId, selectedOption: option }),
-      })
-
-      fetchPolls()
-
       // Remove animation after it completes
       setTimeout(() => {
         setAnimations((prev) => prev.filter((a) => a.id !== newAnimation.id))
@@ -188,8 +225,6 @@ export default function PollApp() {
       <div className="container mx-auto px-4 py-6 pb-24">
         {activeTab === "earn" && (
           <>
-            <h1 className="text-2xl font-bold mb-6">Verify WorldId</h1>
-            <VerifyBlock />
             <h1 className="text-2xl font-bold mb-6">Today's Polls</h1>
             <div className="space-y-4">
               {polls && polls.map((poll) => (

@@ -1,5 +1,9 @@
 import { RequestHandler } from "express";
 import { MongoClient, ObjectId } from "mongodb";
+import {
+    verifyCloudProof,
+    IVerifyResponse,
+} from "@worldcoin/minikit-js";
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -10,9 +14,9 @@ const dbName = "world-polls"; // Replace with your database name
 const collectionName = "polls"; // Replace with your collection name
 
 export const updatePollHandler: RequestHandler = async (req, res) => {
-    console.log("Updating poll.", req.body);
-    const { pollId, selectedOption } = req.body;
-
+    const { pollId, selectedOption, payloadGlobalData } = req.body;
+    console.log("Payload global data.", payloadGlobalData);
+    
     if (!pollId || !selectedOption) {
         console.log("Poll ID and selected option are required.", req.body);
         res.status(400).json({ error: "Poll ID and selected option are required." });
@@ -29,6 +33,23 @@ export const updatePollHandler: RequestHandler = async (req, res) => {
             console.log("Poll not found.", pollId);
             res.status(404).json({ error: "Poll not found." });
             return;
+        }
+
+        if (JSON.parse(payloadGlobalData).payload !== null) {
+            const { payload, action, signal } = JSON.parse(payloadGlobalData);
+            const app_id = process.env.APP_ID as `app_${string}`;
+            const verifyRes = (await verifyCloudProof(
+                payload,
+                app_id,
+                action,
+                signal
+            )) as IVerifyResponse;
+            if (!verifyRes.success) {
+                console.log("Verification failed.", verifyRes);
+                res.status(400).json({ error: "Verification failed." });
+                return;
+            }
+            console.log("Verification successful.", verifyRes);
         }
 
         const optionIndex = poll.options.indexOf(selectedOption);
