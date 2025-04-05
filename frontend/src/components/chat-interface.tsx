@@ -78,7 +78,7 @@ export function ChatInterface() {
 
 
   const sendNotification = async () => {
-    fetch(import.meta.env.VITE_DEPLOYMENT_URL + "/api/send-notification", {
+    fetch(import.meta.env.VITE_DEPLOYMENT_URL + "/send-notification", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
