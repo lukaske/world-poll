@@ -12,6 +12,7 @@ Apart from a frontend, you'll need a backend, this template contains an example 
 
 To serve multiple localhost applications through a single ngrok tunnel (only one available for free-tier users), you can use nginx as a reverse proxy. Follow the steps below to set it up:
 
+
 ### Run nginx
 
 Use the config provided in the root of this repo
