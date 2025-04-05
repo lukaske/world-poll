@@ -5,14 +5,17 @@ import { MiniKit } from "@worldcoin/minikit-js"
 import { useState, useEffect } from "react"
 
 interface HeaderProps {
-  points: number
+  userPoints: number
   badgeCount: number
   onBadgeClick: () => void
+  setUserBadges: (badges: string[]) => void
+  setUserPoints: (points: number) => void
 }
 
 
-export function Header({ points, badgeCount, onBadgeClick }: HeaderProps) {
+export function Header({ userPoints, badgeCount, onBadgeClick, setUserBadges, setUserPoints }: HeaderProps) {
   const [walletAddress, setWalletAddress] = useState<string | undefined>(undefined)
+  // const [userPoints, setUserPoints] = useState<number>(0)
 
   const signIn = async () => {
     console.log("Signing in")
@@ -34,6 +37,19 @@ export function Header({ points, badgeCount, onBadgeClick }: HeaderProps) {
     console.log("data", generateMessageResult, finalPayload)
     console.log("wallet address", MiniKit.walletAddress)
     setWalletAddress(MiniKit.walletAddress!)
+
+    const res2 = await fetch(`/api/points-badges/${MiniKit.walletAddress}`)
+
+
+    // console.log("res2", await res2.json())
+
+    const { points, badges } = await res2.json()
+
+
+    console.log("points", points)
+    console.log("badges", badges)
+    setUserPoints(points)
+    setUserBadges(badges)
   }
   
   return (
@@ -49,7 +65,7 @@ export function Header({ points, badgeCount, onBadgeClick }: HeaderProps) {
               <div className="flex items-center space-x-3">
               {/* Points display */}
                 <div className="flex items-center bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-3 py-1 rounded-full">
-                  <span className="font-bold text-lg">{points}</span>
+                  <span className="font-bold text-lg">{userPoints}</span>
                   <span className="ml-1 text-xs">pts</span>
                 </div>
                 <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={onBadgeClick}>

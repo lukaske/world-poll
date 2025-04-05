@@ -171,17 +171,24 @@ export default function PollApp() {
         finalPayloadGlobal = finalPayload;
       }
       
+      console.log("User address local", MiniKit.walletAddress);
+      
       await fetch(
         import.meta.env.VITE_DEPLOYMENT_URL + "/api/update-poll", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ pollId, selectedOption: option, payloadGlobalData: JSON.stringify({
-          payload: finalPayloadGlobal as ISuccessResult, // Parses only the fields we need to verify
-          action: verifyPayload.action,
-          signal: verifyPayload.signal, // Optional
-        }) }),
+        body: JSON.stringify({
+          pollId, 
+          selectedOption: option,
+          payloadGlobalData: JSON.stringify({
+            payload: finalPayloadGlobal as ISuccessResult, // Parses only the fields we need to verify
+            action: verifyPayload.action,
+            signal: verifyPayload.signal // Optional
+          }),
+          userAddress: MiniKit.walletAddress,
+        })
       })
       
       fetchPolls()
@@ -220,7 +227,7 @@ export default function PollApp() {
 
   return (
     <div className="relative pb-20">
-      <Header points={points} badgeCount={userBadges.length} onBadgeClick={() => setShowBadgesModal(true)} />
+      <Header userPoints={points} badgeCount={userBadges.length} onBadgeClick={() => setShowBadgesModal(true)} setUserBadges={setUserBadges} setUserPoints={setPoints}/>
 
       <div className="container mx-auto px-4 py-2">
         {activeTab === "earn" && (
