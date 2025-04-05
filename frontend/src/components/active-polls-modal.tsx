@@ -56,8 +56,8 @@ export const ActivePollsModal = forwardRef<{ refreshPolls: () => Promise<void> }
     const [loading, setLoading] = useState(true)
     const [closingPoll, setClosingPoll] = useState<string | null>(null)
 
-    const handleClosePoll = async (pollId: string) => {
-      await closePoll(pollId)
+    const handleClosePoll = async () => {
+      await closePolls()
       const pollResultsString = parseAndFormatSurveyResults(polls)
       callBak(pollResultsString)
       onClose()
@@ -233,7 +233,7 @@ export const ActivePollsModal = forwardRef<{ refreshPolls: () => Promise<void> }
                   </div>
                 ))}
                   <Button
-                  onClick={() => closePolls()}
+                  onClick={() => handleClosePoll()}
                   disabled={false}
                   size="sm"
                   className="mt-4 w-full"
