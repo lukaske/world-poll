@@ -10,6 +10,7 @@ from typing import Dict, List, Optional
 import os
 from dotenv import load_dotenv
 import uuid
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -102,6 +103,17 @@ async def generate_research(request: ResearchRequest):
 
 app = FastAPI()
 
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 class TopicRequest(BaseModel):
     topic: str
     previous_poll_results: Optional[Dict[str, List[Dict]]] = None
@@ -126,5 +138,10 @@ async def get_research(topic: str, previous_poll_results: Optional[Dict[str, Lis
 async def ping():
     return {"message": "pong"} 
 
+
+
 if __name__ == "__main__":
+    # disable cors
+
+
     uvicorn.run(app, host="0.0.0.0", port=8888)
