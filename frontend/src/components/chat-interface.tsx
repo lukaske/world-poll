@@ -117,6 +117,8 @@ export function ChatInterface() {
           setMessages((prev) => [...prev, sectionContentMessage]);
           
                 
+        })
+
         // Display conclusion
         const conclusionMessage: Message = {
           id: (Date.now() + reportData.sections.length * 3 + 2).toString(),
@@ -124,7 +126,7 @@ export function ChatInterface() {
           content: `## Conclusion\n\n${reportData.conclusion}`,
         };
         setMessages((prev) => [...prev, conclusionMessage]);
-        })
+        
         
         // Display poll
         const pollQuestions = reportData.poll_questions.map((pollItem, index) => {
