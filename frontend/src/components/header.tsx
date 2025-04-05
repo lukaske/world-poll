@@ -39,15 +39,8 @@ export function Header({ userPoints, badgeCount, onBadgeClick, setUserBadges, se
     setWalletAddress(MiniKit.walletAddress!)
 
     const res2 = await fetch(`/api/points-badges/${MiniKit.walletAddress}`)
-
-
-    // console.log("res2", await res2.json())
-
     const { points, badges } = await res2.json()
 
-
-    console.log("points", points)
-    console.log("badges", badges)
     setUserPoints(points)
     setUserBadges(badges)
   }

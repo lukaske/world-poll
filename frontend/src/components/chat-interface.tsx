@@ -18,8 +18,17 @@ interface Message {
 }
 
 async function closePoll() {
+  const pollId = "67f141b05e76308963c46f53"
+  
   console.log("wallet address", MiniKit.walletAddress)
-  // handlePay()
+
+  const response = await fetch(`/api/get-contributors/${pollId}`)
+  const { contributors } = await response.json()
+  console.log("contributors", contributors)
+
+  await handlePay(contributors[0])
+  await handlePay(contributors[0])
+  await handlePay(contributors[0])
 }
 
 export function ChatInterface() {

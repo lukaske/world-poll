@@ -8,6 +8,7 @@ import { listPollsHandler } from "./src/list-polls";
 import { updatePollHandler } from "./src/update-poll";
 import { nonceHandler } from "./src/nonce";
 import { getUserPointsAndBadgesHandler } from "./src/points-badges";
+import { getContributorsHandler } from "./src/get-contributors";
 import cors from "cors";
 
 const app = express();
@@ -40,6 +41,7 @@ app.get("/list-polls", listPollsHandler);
 app.post("/update-poll", updatePollHandler);
 app.get("/nonce", nonceHandler);
 app.get("/points-badges/:walletAddress", getUserPointsAndBadgesHandler);
+app.get("/get-contributors/:pollId", getContributorsHandler);
 
 const port = 3030; // use env var
 app.listen(port, () => {
