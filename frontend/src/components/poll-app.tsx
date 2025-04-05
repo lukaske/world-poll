@@ -222,7 +222,7 @@ export default function PollApp() {
     <div className="relative pb-20">
       <Header points={points} badgeCount={userBadges.length} onBadgeClick={() => setShowBadgesModal(true)} />
 
-      <div className="container mx-auto px-4 py-6 pb-24">
+      <div className="container mx-auto px-4 py-2">
         {activeTab === "earn" && (
           <>
             <h1 className="text-2xl font-bold mb-6">Today's Polls</h1>

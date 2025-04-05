@@ -7,6 +7,8 @@ from open_deep_research.graph import builder
 from pydantic import BaseModel
 from typing import Dict, List, Optional
 from dotenv import load_dotenv
+import uuid
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException
 from utils import analyze_previous_poll_results, extract_json_from_report
 from prompts import REPORT_STRUCTURE
@@ -69,6 +71,21 @@ async def generate_research(request: ResearchRequest):
 
 app = FastAPI()
 
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+class TopicRequest(BaseModel):
+    topic: str
+    previous_poll_results: Optional[Dict[str, List[Dict]]] = None
+
 @app.post("/research")
 async def get_research(request: ResearchRequest):
     try:
@@ -86,5 +103,10 @@ async def ping():
     return {"message": "pong"}
 
 
+
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8889)
+    # disable cors
+
+
+    uvicorn.run(app, host="0.0.0.0", port=8888)

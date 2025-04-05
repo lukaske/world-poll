@@ -50,32 +50,38 @@ export function ChatInterface() {
     setInput("")
     setIsLoading(true)
 
-    // Simulate AI response
-    setTimeout(() => {
-      let response = ""
-
-      if (input.toLowerCase().includes("poll") || input.toLowerCase().includes("question")) {
-        response = "Great! I can help you create a poll. What's the main question you want to ask?"
-      } else if (input.toLowerCase().includes("option")) {
-        response = "Those are good options! How many people do you want to vote on this poll?"
-      } else if (input.toLowerCase().includes("help")) {
-        response =
-          "I can help you create polls by suggesting questions and options. Just tell me what topic you're interested in polling about."
-      } else {
-        response =
-          "I understand you want to create a poll. Could you provide more details about what kind of poll you'd like to create? For example, what's the main question you want to ask?"
+    // Call LLM endpoint using fetch
+    try {
+      const response = await fetch('http://localhost:8888/research', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ topic: input })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+      
+      const data = await response.json();
+      console.log('Success:', data);
 
       const assistantMessage: Message = {
         id: Date.now().toString(),
         role: "assistant",
-        content: response,
+        content: data,
       }
 
       setMessages((prev) => [...prev, assistantMessage])
       setIsLoading(false)
-    }, 1500)
+
+    } catch (error) {
+      
+      console.error('Error:', error);
+    }
   }
+  
 
   return (
     <div className="flex flex-col h-[calc(100vh-16rem)]">
