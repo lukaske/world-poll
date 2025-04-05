@@ -1,11 +1,14 @@
 import type React from "react"
 
 import { useState, useRef, useEffect } from "react"
+import { marked } from "marked"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Send, Bot, User } from "lucide-react"
 import { handlePay } from "./Pay"
 import { MiniKit, WalletAuthInput } from '@worldcoin/minikit-js'
+
+import ReactMarkdown from 'react-markdown';
 
 
 interface Message {
@@ -50,7 +53,18 @@ export function ChatInterface() {
     setInput("")
     setIsLoading(true)
 
-    // Call LLM endpoint using fetch
+    setTimeout(() => {
+      const assistantMessage: Message = {
+        id: Date.now().toString(),
+        role: "assistant",
+        content: "Initiating deep polling analysis... hang tight!",
+      }
+      setMessages((prev) => [...prev, assistantMessage])
+
+          // Call LLM endpoint using fetch
+  
+    }, 1000)
+
     try {
       const response = await fetch('http://localhost:8888/research', {
         method: 'POST',
@@ -67,19 +81,79 @@ export function ChatInterface() {
       const data = await response.json();
       console.log('Success:', data);
 
-      const assistantMessage: Message = {
-        id: Date.now().toString(),
-        role: "assistant",
-        content: data,
-      }
-
-      setMessages((prev) => [...prev, assistantMessage])
       setIsLoading(false)
+
+      // Assuming you have your data loaded as 'reportData'
+      const displayReport = (reportData) => {
+        // Display title
+        const titleMessage = {
+          id: Date.now().toString(),
+          role: "assistant",
+          content: `# ${reportData.title}`,
+        };
+        setMessages((prev) => [...prev, titleMessage]);
+        
+        // Display introduction
+        const introMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: `## Introduction\n\n${reportData.introduction}`,
+        };
+        setMessages((prev) => [...prev, introMessage]);
+        
+        // Display each section
+        reportData.sections.forEach((section, index) => {      
+          // Sources for this section
+          const sourcesContent = section.sources.map(source => 
+            `- [${source.title}](${source.url})`
+          ).join('\n');
+              
+          // Section head & content
+          const sectionContentMessage: Message = {
+            id: (Date.now() + index + 2 + reportData.sections.length).toString(),
+            role: "assistant",
+            content: `## ${section.heading}\n\n${section.content}\n\n### Sources\n\n${sourcesContent}`,
+          };
+          setMessages((prev) => [...prev, sectionContentMessage]);
+          
+                
+        // Display conclusion
+        const conclusionMessage: Message = {
+          id: (Date.now() + reportData.sections.length * 3 + 2).toString(),
+          role: "assistant",
+          content: `## Conclusion\n\n${reportData.conclusion}`,
+        };
+        setMessages((prev) => [...prev, conclusionMessage]);
+        })
+        
+        // Display poll
+        const pollQuestions = reportData.poll_questions.map((pollItem, index) => {
+          const options = pollItem.options.map((option, i) => 
+            `${i + 1}. ${option}`
+          ).join('\n');
+          
+          return `**Q${index + 1}: ${pollItem.question}**\n${options}`;
+        }).join('\n\n');
+        
+        const pollMessage: Message = {
+          id: (Date.now() + reportData.sections.length * 3 + 3).toString(),
+          role: "assistant",
+          content: `## Poll Questions\n\n${pollQuestions}`,
+        };
+        setMessages((prev) => [...prev, pollMessage]);
+      
+      };
+
+      // Call the function with your data
+      displayReport(data);
 
     } catch (error) {
       
       console.error('Error:', error);
     }
+
+
+
   }
   
 
@@ -101,11 +175,11 @@ export function ChatInterface() {
                 {message.role === "user" ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
               </div>
               <div
-                className={`rounded-lg px-4 py-2 ${
-                  message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
+                className={`rounded-lg px-4 py-2 prose ${
+                  message.role === "user" ? "bg-primary text-primary-foreground text-white" : "bg-muted "
                 }`}
               >
-                {message.content}
+                 <ReactMarkdown>{message.content}</ReactMarkdown>
               </div>
             </div>
           </div>
