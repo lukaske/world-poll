@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { marked } from "marked"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Send, Bot, User, RefreshCcw, StepForward } from "lucide-react"
+import { Send, Bot, User, RefreshCcw, StepForward, Flag } from "lucide-react"
 import { handlePay } from "./Pay"
 import { MiniKit, WalletAuthInput } from '@worldcoin/minikit-js'
 import { sample } from "@/components/sample"
@@ -23,6 +23,8 @@ interface Message {
 
 
 export function ChatInterface() {
+
+  
   const [pollIds, setPollIds] = useState<string[]>(() => {
     const savedPollIds = localStorage.getItem("pollIds");
     return savedPollIds ? JSON.parse(savedPollIds) : [];
@@ -319,6 +321,44 @@ export function ChatInterface() {
     }
   };
 
+  const concludeReasoning = async () => {
+    setIsLoading(true)
+    try {
+      const history = messages
+        .filter((msg) => msg.role === "assistant" || msg.role === "user")
+        .map((msg) => msg.content);
+      const historyString = history.join("\n");
+
+      const response = await fetch("http://localhost:8888/summarize-research", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ research_history: historyString }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      console.log("Summary response:", data);
+
+      const summaryMessage: Message = {
+        id: Date.now().toString(),
+        role: "assistant",
+        content: `## Summary\n\n${data}`,
+      };
+
+      setMessages((prev) => [...prev, summaryMessage]);
+    } catch (error) {
+      console.error("Error summarizing research:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   
 
   return (
@@ -329,6 +369,7 @@ export function ChatInterface() {
         onClose={closeModal}
         callBak={handleIterate}
       />
+      
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
           <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -361,6 +402,11 @@ export function ChatInterface() {
                         Iterate based on feedback
                       <StepForward className="h-4 w-4" />
                     </Button>
+                    <Button variant={'outline'} className="py-4 mt-2" onClick={concludeReasoning} disabled={isLoading}>
+                        Conclude reasoning
+                      <Flag className="h-4 w-4" />
+                    </Button>
+
                   </>
                  )}
 
