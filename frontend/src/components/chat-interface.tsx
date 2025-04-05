@@ -99,7 +99,7 @@ export function ChatInterface() {
 
 
   const createPoll = (data) => {
-    fetch('http://localhost:3030/upload-prompt', {
+    fetch(import.meta.env.VITE_DEPLOYMENT_URL + '/upload-prompt', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
