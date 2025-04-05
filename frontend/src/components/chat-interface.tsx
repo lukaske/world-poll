@@ -208,7 +208,7 @@ export function ChatInterface() {
 
     
     try {
-      
+      /*
       const response = await fetch(import.meta.env.VITE_AI_URL + "/research", {
         method: 'POST',
         headers: {
@@ -222,10 +222,10 @@ export function ChatInterface() {
       }
       
       const data = await response.json();
-      
-      //const data = sample
+      */
+      const data = sample
       // load from sample.ts
-      //await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       console.log('Success:', data);
 
