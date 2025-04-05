@@ -6,6 +6,36 @@ import { handlePay } from "./Pay"
 import { MiniKit } from "@worldcoin/minikit-js"
 import { StepForward } from "lucide-react"
 
+function parseAndFormatSurveyResults(data) {
+  if (!Array.isArray(data)) {
+      return "Error: Input data is not an array";
+  }
+
+  let output = "\n\nSURVEY RESULTS\n\n";
+
+  data.forEach((item, index) => {
+      // Calculate total votes
+      const totalVotes = item.answers.reduce((sum, votes) => sum + votes, 0);
+      
+      // Start building the question section
+      output += `Question ${index + 1}: ${item.question}\n`;
+      output += `Total votes: ${totalVotes}\n\n`;
+
+      // Add each option with vote count and percentage
+      item.options.forEach((option, optIndex) => {
+          const votes = item.answers[optIndex] || 0;
+          const percentage = totalVotes > 0 ? ((votes / totalVotes) * 100).toFixed(1) : 0;
+          
+          output += `  - ${option}: ${votes} votes (${percentage}%)\n`;
+      });
+
+      // Add spacing between questions
+      output += "\n" + "-".repeat(50) + "\n\n";
+  });
+
+  return output;
+}
+
 interface Poll {
   _id: string
   question: string
@@ -17,13 +47,24 @@ interface Poll {
 interface ActivePollsModalProps {
   isOpen: boolean
   onClose: () => void
+  callBak: (input: string) => void
 }
 
 export const ActivePollsModal = forwardRef<{ refreshPolls: () => Promise<void> }, ActivePollsModalProps>(
-  ({ isOpen, onClose }, ref) => {
+  ({ isOpen, onClose, callBak }, ref) => {
     const [polls, setPolls] = useState<Poll[]>([])
     const [loading, setLoading] = useState(true)
     const [closingPoll, setClosingPoll] = useState<string | null>(null)
+
+    const handleClosePoll = async (pollId: string) => {
+      await closePoll(pollId)
+      const pollResultsString = parseAndFormatSurveyResults(polls)
+      callBak(pollResultsString)
+      onClose()
+      setPolls([])
+      setLoading(true)
+      setClosingPoll(null)
+    }
 
     // Expose the refreshPolls method to parent components
     useImperativeHandle(ref, () => ({
@@ -195,7 +236,7 @@ export const ActivePollsModal = forwardRef<{ refreshPolls: () => Promise<void> }
                   onClick={() => closePolls()}
                   disabled={false}
                   size="sm"
-                  className="flex items-center gap-1"
+                  className="mt-4 w-full"
                 >
                   {false ? (
                     "Processing..."
@@ -209,15 +250,6 @@ export const ActivePollsModal = forwardRef<{ refreshPolls: () => Promise<void> }
               </div>
               
             )}
-                <Button
-                  variant="outline"
-                  className="mt-4 w-full"
-                  onClick={onClose}
-                >
-                  Iterate based on feedback
-                  <StepForward className="h-4 w-4" />
-                </Button>
-
           </div>
         </DialogContent>
       </Dialog>
