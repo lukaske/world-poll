@@ -68,7 +68,7 @@ export function Header({ userPoints, badgeCount, onBadgeClick, setUserBadges, se
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <Logo />
-          <h1 className="text-3xl font-bold">PollMaster</h1>
+          <h1 className="text-xl font-bold">PollMaster</h1>
 
             {/* Badges button */}
             { walletAddress !== undefined && walletAddress !== null ? (
