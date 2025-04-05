@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { marked } from "marked"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Send, Bot, User } from "lucide-react"
+import { Send, Bot, User, RefreshCcw } from "lucide-react"
 import { handlePay } from "./Pay"
 import { MiniKit, WalletAuthInput } from '@worldcoin/minikit-js'
 
@@ -32,16 +32,33 @@ async function closePoll() {
 }
 
 export function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "assistant",
-      content: "Hi! I'm your poll creation assistant. What kind of poll would you like to create today?",
-    },
-  ])
+  const [messages, setMessages] = useState<Message[]>(() => {
+    const savedMessages = localStorage.getItem('chatMessages');
+    return savedMessages 
+      ? JSON.parse(savedMessages) 
+      : [{
+          id: "1",
+          role: "assistant",
+          content: "Hi! I'm your poll creation assistant. What kind of poll would you like to create today?",
+        }];
+  });
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    localStorage.setItem('chatMessages', JSON.stringify(messages));
+  }, [messages]);
+
+  const clearChatHistory = () => {
+    localStorage.removeItem('chatMessages');
+    setMessages([{
+      id: "1",
+      role: "assistant",
+      content: "Hi! I'm your poll creation assistant. What kind of poll would you like to create today?",
+    }]);
+  };
+  
 
   // Auto-scroll to bottom of messages
   useEffect(() => {
@@ -246,7 +263,7 @@ export function ChatInterface() {
       </div>
 
       <form onSubmit={handleSubmit} className="p-4 border-t">
-        <div className="flex space-x-2">
+        <div className="flex space-x-3">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -257,6 +274,10 @@ export function ChatInterface() {
           <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
             <Send className="h-4 w-4" />
           </Button>
+          <Button size='icon' variant={'ghost'} onClick={clearChatHistory} >
+            <RefreshCcw className="h-4 w-4" />
+          </Button>
+
         </div>
       </form>
       <button onClick={closePoll}>Close poll</button>
