@@ -1,8 +1,9 @@
 import { Award } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { MiniKit } from "@worldcoin/minikit-js"
-import { useState, useEffect } from "react"
+// import { MiniKit } from "@worldcoin/minikit-js"
+import { useState, useEffect, useCallback } from "react"
+import { MiniKit, RequestPermissionPayload, Permission } from '@worldcoin/minikit-js'
 
 interface HeaderProps {
   userPoints: number
@@ -43,6 +44,16 @@ export function Header({ userPoints, badgeCount, onBadgeClick, setUserBadges, se
 
     setUserPoints(points)
     setUserBadges(badges)
+
+    // NOTIFICATIONS
+    console.log("requesting permission for notifications")
+
+    const requestPermissionPayload: RequestPermissionPayload = {
+      permission: Permission.Notifications,
+    };
+    const payload = await MiniKit.commandsAsync.requestPermission(requestPermissionPayload);
+
+    console.log("payload", payload)
   }
   
   return (

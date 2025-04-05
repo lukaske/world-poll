@@ -76,6 +76,23 @@ export function ChatInterface() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
+
+  const sendNotification = async () => {
+    fetch(import.meta.env.VITE_DEPLOYMENT_URL + "/api/send-notification", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ wallet_addresses: ["0xfd84b9538bd76523527248b314394a156718016e"] })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Notification sent successfully:', data);
+    })
+    .catch((error) => {
+      console.error('Error sending notification:', error);
+    });
+  }
   useEffect(() => {
     localStorage.setItem("pollIds", JSON.stringify(pollIds));
   }, [pollIds]);
@@ -100,6 +117,8 @@ export function ChatInterface() {
     .catch((error) => {
       console.error('Error:', error);
     });
+
+    sendNotification()
   }
 
 
@@ -328,6 +347,8 @@ export function ChatInterface() {
 
         </div>
       </form>
+      <button onClick={closePoll}>Close poll</button>
+      <button onClick={sendNotification}>Send notification</button>
       {
         pollIds.length > 0 && (
           <div className="p-4 flex justify-center">

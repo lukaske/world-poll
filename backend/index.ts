@@ -10,6 +10,7 @@ import { uploadPromptHandler } from "./src/upload-prompt";
 import { nonceHandler } from "./src/nonce";
 import { getUserPointsAndBadgesHandler } from "./src/points-badges";
 import { getContributorsHandler } from "./src/get-contributors";
+import { sendNotificationHandler } from "./src/send-notification";
 import cors from "cors";
 
 const app = express();
@@ -44,7 +45,7 @@ app.post("/upload-prompt", uploadPromptHandler);
 app.get("/nonce", nonceHandler);
 app.get("/points-badges/:walletAddress", getUserPointsAndBadgesHandler);
 app.get("/get-contributors/:pollId", getContributorsHandler);
-
+app.post("/send-notification", sendNotificationHandler);
 const port = 3030; // use env var
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
