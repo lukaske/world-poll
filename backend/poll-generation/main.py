@@ -11,6 +11,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException
 from utils import analyze_previous_poll_results, extract_json_from_report
 from prompts import REPORT_STRUCTURE
+from langchain_community.llms import OpenAI
+from langchain.chains.summarize import load_summarize_chain
+from langchain.docstore.document import Document
 
 load_dotenv()
 
@@ -18,11 +21,8 @@ class ResearchRequest(BaseModel):
     topic: str
     previous_poll_results: Optional[Dict[str, List[Dict]]] = None
 
-
-class TopicRequest(BaseModel):
-    topic: str
-    previous_poll_results: Optional[Dict[str, List[Dict]]] = None
-
+class ResearchSummaryRequest(BaseModel):
+    research_history: str
 
 async def generate_research(request: ResearchRequest):
     memory = MemorySaver()
@@ -68,6 +68,17 @@ async def generate_research(request: ResearchRequest):
     except Exception as e:
         raise Exception(e)
 
+async def summarize_research(request: ResearchSummaryRequest):
+    llm = OpenAI(temperature=0)
+    summary_chain = load_summarize_chain(llm, chain_type="map_reduce")
+
+    research_text = request.research_history
+    documents = [Document(page_content=research_text)]
+
+    summary = summary_chain.run(documents)
+
+    print("Summary:\n", summary)
+    return summary
 
 app = FastAPI()
 
@@ -98,15 +109,17 @@ async def get_research(request: ResearchRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/summarize-research")
+async def summarize_research_endpoint(request: ResearchSummaryRequest):
+    try:
+        summary = await summarize_research(request)
+        return summary
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/ping")
 async def ping():
     return {"message": "pong"}
 
-
-
-
 if __name__ == "__main__":
-    # disable cors
-
-
     uvicorn.run(app, host="0.0.0.0", port=8888)
