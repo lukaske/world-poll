@@ -80,3 +80,5 @@ export const PayBlock = () => {
     </button>
   );
 };
+
+export { handlePay };

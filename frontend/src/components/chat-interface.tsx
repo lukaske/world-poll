@@ -4,11 +4,19 @@ import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Send, Bot, User } from "lucide-react"
+import { handlePay } from "./Pay"
+import { MiniKit, WalletAuthInput } from '@worldcoin/minikit-js'
+
 
 interface Message {
   id: string
   role: "user" | "assistant"
   content: string
+}
+
+async function closePoll() {
+  console.log("wallet address", MiniKit.walletAddress)
+  // handlePay()
 }
 
 export function ChatInterface() {
@@ -138,6 +146,7 @@ export function ChatInterface() {
           </Button>
         </div>
       </form>
+      <button onClick={closePoll}>Close poll</button>
     </div>
   )
 }

@@ -6,6 +6,7 @@ import { confirmPaymentHandler } from "./src/confirm-payment";
 import { createPollHandler } from "./src/create-poll";
 import { listPollsHandler } from "./src/list-polls";
 import { updatePollHandler } from "./src/update-poll";
+import { nonceHandler } from "./src/nonce";
 import cors from "cors";
 
 const app = express();
@@ -36,6 +37,7 @@ app.post("/confirm-payment", confirmPaymentHandler);
 app.post("/create-poll", createPollHandler);
 app.get("/list-polls", listPollsHandler);
 app.post("/update-poll", updatePollHandler);
+app.get("/nonce", nonceHandler);
 
 const port = 3030; // use env var
 app.listen(port, () => {
