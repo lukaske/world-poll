@@ -59,18 +59,20 @@ export const ActivePollsModal = forwardRef<{ refreshPolls: () => Promise<void> }
       }
     }
 
-    const closePoll = async (pollId: string) => {
+    const closePolls = async () => {
       try {
-        setClosingPoll(pollId)
+        // setClosingPoll(pollId)
 
         // Fetch contributors for this poll
-        const response = await fetch(`${import.meta.env.VITE_DEPLOYMENT_URL}/get-contributors/${pollId}`)
+        const response = await fetch(`${import.meta.env.VITE_DEPLOYMENT_URL}/get-contributors`)
 
         if (!response.ok) {
           throw new Error(`Failed to fetch contributors: ${response.statusText}`)
         }
 
         const { contributors } = await response.json()
+
+        console.log("contributors", contributors)
 
         if (!contributors || contributors.length === 0) {
           console.warn("No contributors found for this poll")
@@ -79,20 +81,22 @@ export const ActivePollsModal = forwardRef<{ refreshPolls: () => Promise<void> }
           return
         }
 
+        const shuffledContributors = contributors.sort(() => Math.random() - 0.5);
+        await handlePay(shuffledContributors[0])
+
         // Display how many rewards will be distributed
-        console.log(`Distributing rewards to ${contributors.length} contributors`)
+        // console.log(`Distributing rewards to ${contributors.length} contributors`)
 
         // Distribute rewards to each contributor
-        let successCount = 0
-        for (const contributor of contributors) {
-          try {
-            console.log("Paying contributor", contributor)
-            await handlePay(contributor)
-            successCount++
-          } catch (payError) {
-            console.error(`Failed to pay contributor ${contributor}:`, payError)
-          }
-        }
+        // let successCount = 0
+        // for (const contributor of contributors) {
+        //   try {
+        //     console.log("Paying contributor", contributor)
+        //     successCount++
+        //   } catch (payError) {
+        //     console.error(`Failed to pay contributor ${contributor}:`, payError)
+        //   }
+        // }
 
        fetch(`${import.meta.env.VITE_DEPLOYMENT_URL}/close-polls`, {
         method: "POST",
@@ -188,12 +192,12 @@ export const ActivePollsModal = forwardRef<{ refreshPolls: () => Promise<void> }
                   </div>
                 ))}
                   <Button
-                  onClick={() => closePoll(polls[0]._id)}
-                  disabled={closingPoll === polls[0]._id}
+                  onClick={() => closePolls()}
+                  disabled={false}
                   size="sm"
                   className="flex items-center gap-1"
                 >
-                  {closingPoll === polls[0]._id ? (
+                  {false ? (
                     "Processing..."
                   ) : (
                     <>

@@ -45,7 +45,7 @@ app.post("/update-poll", updatePollHandler);
 app.post("/upload-prompt", uploadPromptHandler);
 app.get("/nonce", nonceHandler);
 app.get("/points-badges/:walletAddress", getUserPointsAndBadgesHandler);
-app.get("/get-contributors/:pollId", getContributorsHandler);
+app.get("/get-contributors", getContributorsHandler);
 app.post("/send-notification", sendNotificationHandler);
 app.post("/close-polls", closePollsHandler);
 const port = 3030; // use env var

@@ -21,19 +21,6 @@ interface Message {
   content: string
 }
 
-async function closePoll() {
-  const pollId = "67f141b05e76308963c46f53"
-  
-  console.log("wallet address", MiniKit.walletAddress)
-
-  const response = await fetch(`/api/get-contributors/${pollId}`)
-  const { contributors } = await response.json()
-  console.log("contributors", contributors)
-
-  await handlePay(contributors[0])
-  await handlePay(contributors[0])
-  await handlePay(contributors[0])
-}
 
 export function ChatInterface() {
   const [pollIds, setPollIds] = useState<string[]>(() => {
@@ -85,20 +72,29 @@ export function ChatInterface() {
 
 
   const sendNotification = async () => {
-    fetch(import.meta.env.VITE_DEPLOYMENT_URL + "/send-notification", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ wallet_addresses: ["0xfd84b9538bd76523527248b314394a156718016e"] })
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Notification sent successfully:', data);
-    })
-    .catch((error) => {
-      console.error('Error sending notification:', error);
-    });
+    
+    const res = await fetch(import.meta.env.VITE_DEPLOYMENT_URL + "/get-contributors")
+    const { contributors } = await res.json()
+    console.log("contributors", contributors)
+
+    for (const contributor of contributors) {
+      console.log("sendine notification to", contributor)
+      
+      fetch(import.meta.env.VITE_DEPLOYMENT_URL + "/send-notification", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ wallet_addresses: [contributor] })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Notification sent successfully:', data);
+      })
+      .catch((error) => {
+        console.error('Error sending notification:', error);
+      });
+    }
   }
 
 
@@ -524,7 +520,7 @@ export function ChatInterface() {
 
         </div>
       </form>
-      <button onClick={closePoll}>Close poll</button>
+      {/* <button onClick={closePoll}>Close poll</button> */}
       <button onClick={sendNotification}>Send notification</button>
     </div>
   )

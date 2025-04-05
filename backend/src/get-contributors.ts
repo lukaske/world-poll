@@ -10,25 +10,36 @@ const dbName = "world-polls"; // Replace with your database name
 const collectionName = "polls"; // Replace with your collection name
 
 export const getContributorsHandler: RequestHandler = async (req, res) => {
-  const { pollId } = req.params;
+//   const { pollId } = req.params;
 
-  if (!pollId) {
-    res.status(400).json({ error: "Poll ID is required." });
-    return;
-  }
+//   if (!pollId) {
+//     res.status(400).json({ error: "Poll ID is required." });
+//     return;
+//   }
 
   try {
     await client.connect();
     const database = client.db(dbName);
     const collection = database.collection(collectionName);
+    
+    const polls = await collection.find({}).toArray();
+    const contributorsArray:any[] = [];
 
-    const poll = await collection.findOne({ _id: ObjectId.createFromHexString(pollId) });
-    if (!poll) {
-      res.status(404).json({ error: "Poll not found." });
-      return;
-    }
+    polls.forEach(poll => {
+      if (poll.contributors) {
+        poll.contributors.forEach(contributor => contributorsArray.push(contributor));
+      }
+    });
 
-    const contributors = poll.contributors || [];
+    const contributors = contributorsArray;
+
+    // const poll = await collection.findOne({ _id: ObjectId.createFromHexString(pollId) });
+    // if (!poll) {
+    //   res.status(404).json({ error: "Poll not found." });
+    //   return;
+    // }
+
+    // const contributors = poll.contributors || [];
     res.status(200).json({ contributors });
   } catch (error) {
     console.error("Error fetching contributors:", error);
