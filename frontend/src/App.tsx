@@ -2,7 +2,8 @@ import "./App.css";
 
 import { PayBlock } from "./components/Pay";
 import { VerifyBlock } from "./components/Verify";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
+import PollApp from "@/components/poll-app"
 
 interface Message {
   text: string;
@@ -18,97 +19,10 @@ const initialMessages: Message[] = [
 ];
 
 export default function App() {
-  const [page, setPage] = useState<"forms" | "chat">("forms");
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState<string>("");
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // Scroll to bottom whenever messages change
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  // Scroll to bottom when switching to chat page
-  useEffect(() => {
-    if (page === "chat") {
-      setMessages(initialMessages);
-      setTimeout(scrollToBottom, 100); // Small delay to ensure DOM is updated
-    }
-  }, [page]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleSendMessage = () => {
-    if (input.trim()) {
-      setMessages([...messages, { text: input, sender: 'user' }]);
-      setInput("");
-      // Simulate ChatGPT response
-      setTimeout(() => {
-        setMessages(prev => [...prev, { 
-          text: "I understand your question. Let me help you with that.", 
-          sender: 'chatgpt' 
-        }]);
-      }, 1000);
-    }
-  };
-
+  
   return (
-    <main className="flex min-h-screen flex-col">
-      {page === "forms" && (
-        <div className="p-24">
-          <VerifyBlock />
-        </div>
-      )}
-      {page === "chat" && (
-        <div className="chat-container">
-          <div className="messages">
-            {messages.map((msg, index) => (
-              <div 
-                key={index} 
-                className={`message ${msg.sender === 'user' ? 'user-message' : 'chatgpt-message'}`}
-              >
-                {msg.text}
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-          <div className="input-container">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your message..."
-              className="message-input"
-            />
-            <button onClick={handleSendMessage} className="send-button">
-              Send
-            </button>
-          </div>
-        </div>
-      )}
-
-      <nav className="fixed bottom-0 left-0 right-0 bg-gray-800 shadow-md p-4">
-        <ul className="flex justify-around">
-          <li>
-            <button 
-              className="flex items-center text-white hover:text-blue-400 transition duration-300" 
-              onClick={() => setPage("forms")}
-            >
-              Forms
-            </button>
-          </li>
-          <li>
-            <button 
-              className="flex items-center text-white hover:text-blue-400 transition duration-300" 
-              onClick={() => setPage("chat")}
-            >
-              Chat
-            </button>
-          </li>
-        </ul>
-      </nav>
+    <main className="min-h-screen bg-gray-50">
+      <PollApp />
     </main>
   );
 }
