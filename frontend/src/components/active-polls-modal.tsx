@@ -57,7 +57,7 @@ export const ActivePollsModal = forwardRef<{ refreshPolls: () => Promise<void> }
     const [closingPoll, setClosingPoll] = useState<string | null>(null)
 
     const handleClosePoll = async (pollId: string) => {
-      closePoll(pollId)
+      await closePoll(pollId)
       const pollResultsString = parseAndFormatSurveyResults(polls)
       callBak(pollResultsString)
       onClose()

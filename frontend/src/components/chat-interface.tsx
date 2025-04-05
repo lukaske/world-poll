@@ -255,7 +255,7 @@ export function ChatInterface() {
 
   const handleIterate = async (pollResults)  => {
         const initialMessage: Message[] = messages.filter((msg) => msg.role == 'user')
-        const iteratedInput = initialMessage[initialMessage.length - 1].content + '\n\n Please think of further questions to deep explore this topic based on the following collected poll data: ' + pollResults
+        const iteratedInput = initialMessage[initialMessage.length - 1].content + '\n\n Find conclusions in the following data and generate further questions to deepen interesting findings: ' + pollResults
         
         const userMessage: Message = {
           id: Date.now().toString(),
