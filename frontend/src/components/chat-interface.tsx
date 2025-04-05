@@ -66,9 +66,9 @@ export function ChatInterface() {
 
 
   // Auto-scroll to bottom of messages
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+  // useEffect(() => {
+  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  // }, [messages])
 
 
   const sendNotification = async () => {
