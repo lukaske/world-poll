@@ -127,7 +127,7 @@ export function ChatInterface() {
         })
         
         // Display poll
-        const pollQuestions = reportData.poll.map((pollItem, index) => {
+        const pollQuestions = reportData.poll_questions.map((pollItem, index) => {
           const options = pollItem.options.map((option, i) => 
             `${i + 1}. ${option}`
           ).join('\n');
