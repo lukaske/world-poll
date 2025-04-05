@@ -41,6 +41,7 @@ async def generate_research(request: ResearchRequest):
             "writer_provider": "openai",
             "writer_model": "gpt-4o",
             "max_search_depth": 1, # in order to make everything faster
+            "max_search_results": 1,
             "report_structure": REPORT_STRUCTURE
         }
     }

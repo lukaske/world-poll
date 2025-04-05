@@ -42,8 +42,6 @@ export const VerifyBlock = () => {
     //   version: 1,
     // };
 
-    console.log("FINAL PAYLOAD", JSON.stringify(finalPayload));
-
     // no need to verify if command errored
     if (finalPayload.status === "error") {
       console.log("Command error");

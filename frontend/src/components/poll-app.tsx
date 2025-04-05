@@ -165,15 +165,12 @@ export default function PollApp() {
         console.log("WORKING")
 
         const { finalPayload } = await MiniKit.commandsAsync.verify(verifyPayload);
-    
-        console.log("FINAL PAYLOAD", JSON.stringify(finalPayload));
-    
+        
         // no need to verify if command errored
         if (finalPayload.status === "error") {
           console.log("Command error");
           console.log(finalPayload);
         }
-        console.log("FINAL PAYLOAD", finalPayload)  
         finalPayloadGlobal = finalPayload;
       }
       

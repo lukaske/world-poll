@@ -360,8 +360,6 @@ def write_final_sections(state: SectionState, config: RunnableConfig):
     # Format system instructions
     system_instructions = final_section_writer_instructions.format(topic=topic, section_name=section.name, section_topic=section.description, context=completed_report_sections)
 
-    print(final_section_writer_instructions)
-
     # Generate section  
     writer_provider = get_config_value(configurable.writer_provider)
     writer_model_name = get_config_value(configurable.writer_model)
