@@ -270,7 +270,7 @@ export function ChatInterface() {
 
         try {
           
-          const response = await fetch(import.meta.env.VITE_LLM_BACKEND + '/research', {
+          const response = await fetch(import.meta.env.VITE_AI_URL + '/research', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
