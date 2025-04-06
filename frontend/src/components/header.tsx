@@ -31,7 +31,7 @@ export function Header({ userPoints, badgeCount, onBadgeClick, setUserBadges, se
       console.log("MiniKit is not installed")
       return
     }
-    const res = await fetch(`/api/nonce`)
+    const res = await fetch(`${import.meta.env.VITE_DEPLOYMENT_URL}/nonce`)
     console.log("res", res)
     const { nonce } = await res.json()
     console.log("nonce", nonce)
